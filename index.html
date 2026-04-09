@@ -4,28 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Wyze Pro AI Add-On — App Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <style>
-  /* ── Reset & Base ── */
-  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  /* ── Wyze Design System Tokens ── */
+  @font-face { font-family: 'Gilroy'; src: local('Gilroy'); }
   :root {
-    --bg: #f2f4f5;
-    --card: #fff;
-    --text: #1a1a1a;
-    --text2: #6b7280;
-    --teal: #06b6a0;
-    --teal-bg: rgba(6,182,160,.08);
-    --purple: #5b4bff;
-    --purple-light: #eeedff;
-    --red: #ef4444;
-    --red-bg: rgba(239,68,68,.06);
-    --border: #e5e7eb;
-    --radius: 14px;
-    --radius-sm: 10px;
+    --bg: #1E1E1E;
+    --black: #000000;
+    --surface1: #252525;
+    --surface2: #2E2E2E;
+    --surface3: #383838;
+    --text-primary: #FFFFFF;
+    --text-secondary: #C8C8C8;
+    --text-muted: #787878;
+    --text-placeholder: #A0A0A0;
+    --green: #1DF0BB;
+    --green-dark: #00A288;
+    --green-glow: rgba(29,240,187,.2);
+    --green-bg: rgba(29,240,187,.08);
+    --purple: #4E2FD2;
+    --purple-light: #827AFF;
+    --purple-bg: rgba(78,47,210,.18);
+    --purple-border: rgba(78,47,210,.35);
+    --gradient: linear-gradient(135deg, #1DF0BB, #4E2FD2);
+    --red: #FF4F4F;
+    --red-bg: rgba(255,79,79,.12);
+    --amber: #FFB340;
+    --blue: #539DF5;
+    --border: rgba(255,255,255,.06);
+    --border-light: rgba(255,255,255,.1);
+    --border-hover: rgba(255,255,255,.15);
+    --radius-sm: 8px;
+    --radius-card: 12px;
+    --radius-sheet: 20px;
+    --radius-pill: 9999px;
+    --shadow-card: rgba(0,0,0,.3) 0 4px 16px;
+    --shadow-float: rgba(0,0,0,.5) 0 8px 24px;
     --nav-h: 56px;
     --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    --font: 'Gilroy', Arial, Helvetica, sans-serif;
   }
-  html, body { font-family: var(--font); background: var(--bg); color: var(--text); overflow: hidden; height: 100%; }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { font-family: var(--font); background: var(--bg); color: var(--text-primary); overflow: hidden; height: 100%; }
 
   /* ── Phone Frame ── */
   .phone {
@@ -34,14 +54,14 @@
     display: flex; flex-direction: column;
   }
   @media (min-width: 500px) {
-    body { display: flex; align-items: center; justify-content: center; background: #e8e8e8; }
-    .phone { border-radius: 40px; border: 8px solid #222; height: 852px; margin-top: 20px; margin-bottom: 20px; }
+    body { display: flex; align-items: center; justify-content: center; background: #111; }
+    .phone { border-radius: 40px; border: 8px solid #000; height: 852px; margin-top: 20px; margin-bottom: 20px; }
   }
 
   /* ── Status Bar ── */
   .status-bar {
     height: 54px; display: flex; align-items: flex-end; justify-content: space-between;
-    padding: 0 24px 6px; font-size: 15px; font-weight: 600; flex-shrink: 0;
+    padding: 0 24px 6px; font-size: 15px; font-weight: 600; flex-shrink: 0; color: var(--text-primary);
   }
   .status-bar .right { display: flex; gap: 5px; align-items: center; font-size: 13px; }
 
@@ -60,26 +80,26 @@
   .screen-header {
     padding: 4px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0;
   }
-  .screen-header h1 { font-size: 28px; font-weight: 700; }
+  .screen-header h1 { font-size: 28px; font-weight: 600; color: var(--text-primary); }
   .back-btn {
     width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; border: none; background: none; font-size: 22px; color: var(--text);
+    cursor: pointer; border: none; background: none; font-size: 22px; color: var(--text-secondary);
   }
 
   /* ── Tab Bar ── */
   .tab-bar {
     position: absolute; bottom: 0; left: 0; right: 0;
     height: calc(var(--nav-h) + var(--safe-bottom));
-    background: #fff; border-top: 1px solid var(--border);
+    background: var(--bg); border-top: 1px solid var(--border-light);
     display: flex; align-items: flex-start; justify-content: space-around;
     padding-top: 6px; z-index: 100;
   }
   .tab-bar .tab {
     display: flex; flex-direction: column; align-items: center; gap: 2px;
-    font-size: 10px; color: var(--text2); cursor: pointer; border: none; background: none;
-    padding: 4px 12px; position: relative;
+    font-size: 10px; font-weight: 400; color: var(--text-muted); cursor: pointer; border: none; background: none;
+    padding: 4px 12px; position: relative; font-family: var(--font);
   }
-  .tab-bar .tab.active { color: var(--teal); }
+  .tab-bar .tab.active { color: var(--green); font-weight: 600; }
   .tab-bar .tab svg { width: 24px; height: 24px; }
   .tab-bar .tab .badge {
     position: absolute; top: 0; right: 6px; width: 8px; height: 8px;
@@ -88,372 +108,386 @@
 
   /* ── Cards ── */
   .card {
-    background: var(--card); border-radius: var(--radius); margin: 0 16px 12px;
-    padding: 18px; box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 12px;
+    padding: 16px; border: 1px solid var(--border); box-shadow: var(--shadow-card);
   }
-  .card-group { background: var(--card); border-radius: var(--radius); margin: 0 16px 12px; overflow: hidden; }
+  .card-group { background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 12px; overflow: hidden; border: 1px solid var(--border); }
   .card-row {
     display: flex; align-items: center; padding: 16px 18px; cursor: pointer;
-    border-bottom: 1px solid var(--border); gap: 14px;
+    border-bottom: 1px solid var(--border-light); gap: 14px;
   }
   .card-row:last-child { border-bottom: none; }
-  .card-row .icon { width: 28px; height: 28px; flex-shrink: 0; color: var(--text2); }
-  .card-row .label { flex: 1; font-size: 16px; font-weight: 400; }
-  .card-row .chevron { color: #c4c4c4; font-size: 18px; flex-shrink: 0; }
+  .card-row:active { background: var(--surface3); }
+  .card-row .icon { width: 28px; height: 28px; flex-shrink: 0; color: var(--text-muted); }
+  .card-row .label { flex: 1; font-size: 15px; font-weight: 400; color: var(--text-secondary); }
+  .card-row .chevron { color: var(--text-muted); font-size: 18px; flex-shrink: 0; }
 
-  /* ── Section titles ── */
-  .section-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .5px; padding: 18px 20px 8px; }
+  /* ── Section titles (eyebrow style) ── */
+  .section-title {
+    font-size: 11px; font-weight: 600; color: var(--text-placeholder); text-transform: uppercase;
+    letter-spacing: 1px; padding: 20px 20px 8px;
+  }
 
   /* ── Plan Badge ── */
   .plan-badge {
-    background: var(--card); border-radius: var(--radius); margin: 0 16px 12px;
-    padding: 22px 20px; display: flex; align-items: center; gap: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 12px;
+    padding: 20px; display: flex; align-items: center; gap: 16px;
+    border: 1px solid var(--border); box-shadow: var(--shadow-card);
   }
-  .plan-badge .info h2 { font-size: 24px; font-weight: 700; }
-  .plan-badge .info p { font-size: 13px; color: var(--text2); margin-top: 2px; }
+  .plan-badge .info h2 { font-size: 24px; font-weight: 600; }
+  .plan-badge .info p { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
   .plan-badge .shield { width: 56px; height: 56px; margin-left: auto; flex-shrink: 0; }
 
-  /* ── Services Screen ── */
+  /* ── Services ── */
   .service-item {
-    background: var(--card); border-radius: var(--radius); margin: 0 16px 12px;
-    padding: 18px 20px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 12px;
+    padding: 16px 20px; border: 1px solid var(--border); box-shadow: var(--shadow-card);
   }
   .service-item .top { display: flex; align-items: flex-start; justify-content: space-between; }
-  .service-item h3 { font-size: 17px; font-weight: 700; }
-  .service-item h3 span { font-weight: 400; font-size: 15px; color: var(--text2); }
-  .service-item .meta { font-size: 13px; color: var(--text2); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
-  .service-item .dots { font-size: 20px; color: var(--text2); cursor: pointer; padding: 4px; }
+  .service-item h3 { font-size: 16px; font-weight: 600; }
+  .service-item h3 span { font-weight: 400; font-size: 14px; color: var(--text-muted); }
+  .service-item .meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 6px; }
+  .service-item .dots { font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 4px; }
 
-  /* Add-on nested under parent */
-  .addon-nested { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  /* ── Nested add-ons ── */
+  .addon-nested { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border-light); }
   .addon-nested .addon-row {
     display: flex; align-items: center; gap: 10px; padding: 8px 0; cursor: pointer;
   }
+  .addon-nested .addon-row:active { opacity: .8; }
   .addon-nested .addon-icon {
-    width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, #7c3aed, #5b4bff);
-    display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; font-weight: 700;
-    flex-shrink: 0;
+    width: 32px; height: 32px; border-radius: var(--radius-sm);
+    background: var(--purple); display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 12px; font-weight: 600; flex-shrink: 0;
   }
   .addon-nested .addon-info { flex: 1; }
   .addon-nested .addon-info .name { font-size: 14px; font-weight: 600; }
-  .addon-nested .addon-info .detail { font-size: 12px; color: var(--text2); }
+  .addon-nested .addon-info .detail { font-size: 12px; color: var(--text-muted); }
 
-  /* ── Add-on CTA row (compact, tappable) ── */
+  /* ── Add-on CTA row ── */
   .addon-cta {
-    background: var(--card); border-radius: var(--radius); margin: 0 16px 10px;
+    background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 10px;
     padding: 14px 16px; display: flex; align-items: center; gap: 14px;
-    cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,.04);
-    transition: background .12s;
+    cursor: pointer; border: 1px solid var(--border);
+    box-shadow: var(--shadow-card); transition: background .12s;
   }
-  .addon-cta:active { background: #f9fafb; }
+  .addon-cta:active { background: var(--surface3); }
   .addon-cta .cta-icon {
-    width: 40px; height: 40px; border-radius: 10px;
-    background: linear-gradient(135deg, #7c3aed, #5b4bff);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 15px; font-weight: 700; flex-shrink: 0;
+    width: 40px; height: 40px; border-radius: var(--radius-sm);
+    background: var(--purple); display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 14px; font-weight: 600; flex-shrink: 0;
   }
   .addon-cta .cta-body { flex: 1; min-width: 0; }
   .addon-cta .cta-body .cta-title {
     font-size: 15px; font-weight: 600; display: flex; align-items: center; gap: 8px;
   }
-  .addon-cta .cta-body .cta-title .new-badge {
-    font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px;
-    background: var(--purple-light); color: var(--purple);
-    padding: 2px 7px; border-radius: 4px;
+  .addon-cta .cta-body .cta-title .ai-badge {
+    font-size: 10px; font-weight: 600; letter-spacing: .5px;
+    background: var(--purple-bg); color: var(--purple-light);
+    border: 1px solid var(--purple-border); padding: 2px 8px; border-radius: var(--radius-pill);
   }
   .addon-cta .cta-body .cta-desc {
-    font-size: 12px; color: var(--text2); margin-top: 2px;
+    font-size: 12px; color: var(--text-muted); margin-top: 2px;
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
-  .addon-cta .cta-price {
-    text-align: right; flex-shrink: 0;
-  }
-  .addon-cta .cta-price .amount { font-size: 15px; font-weight: 700; }
-  .addon-cta .cta-price .per { font-size: 10px; color: var(--text2); }
-  .addon-cta .cta-chevron { color: #c4c4c4; font-size: 18px; flex-shrink: 0; margin-left: 2px; }
+  .addon-cta .cta-price { text-align: right; flex-shrink: 0; }
+  .addon-cta .cta-price .amount { font-size: 15px; font-weight: 600; color: var(--green); }
+  .addon-cta .cta-price .per { font-size: 10px; color: var(--text-muted); }
+  .addon-cta .cta-chevron { color: var(--text-muted); font-size: 18px; flex-shrink: 0; margin-left: 2px; }
 
-  /* ── Storefront features list ── */
-  .storefront-features { list-style: none; }
-  .storefront-features li {
+  /* ── Feature list ── */
+  .feature-list { list-style: none; }
+  .feature-list li {
     font-size: 14px; padding: 8px 0; display: flex; align-items: flex-start; gap: 10px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-light); color: var(--text-secondary);
   }
-  .storefront-features li:last-child { border: none; }
-  .storefront-features .check { color: var(--teal); font-weight: 700; flex-shrink: 0; }
+  .feature-list li:last-child { border: none; }
+  .feature-list .check { color: var(--purple-light); font-weight: 700; flex-shrink: 0; }
 
-  /* ── Paywall / Detail ── */
+  /* ── Paywall ── */
   .paywall-hero { padding: 28px 20px 20px; text-align: center; }
-  .paywall-hero h2 { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
-  .paywall-hero p { font-size: 14px; color: var(--text2); line-height: 1.5; }
+  .paywall-hero h2 { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+  .paywall-hero p { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
 
   .contrast-box {
-    margin: 0 16px 16px; border-radius: var(--radius); overflow: hidden;
-    border: 1px solid var(--border);
+    margin: 0 16px 16px; border-radius: var(--radius-card); overflow: hidden;
+    border: 1px solid var(--border-light);
   }
   .contrast-before {
-    padding: 16px 18px; background: #f9fafb; color: #9ca3af;
-    font-size: 14px; line-height: 1.5; border-bottom: 1px solid var(--border);
+    padding: 16px 18px; background: var(--surface1); color: var(--text-muted);
+    font-size: 14px; line-height: 1.5; border-bottom: 1px solid var(--border-light);
   }
-  .contrast-before .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; color: #b0b5bc; }
+  .contrast-before .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; color: var(--text-muted); }
   .contrast-after {
-    padding: 16px 18px; background: #fff;
-    font-size: 14px; line-height: 1.5; color: var(--text); position: relative;
+    padding: 16px 18px; background: var(--surface2);
+    font-size: 14px; line-height: 1.5; color: var(--text-primary); position: relative;
   }
-  .contrast-after .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; color: var(--purple); }
-  .contrast-after .teal-bar { position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; background: var(--teal); border-radius: 2px; }
+  .contrast-after .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; color: var(--purple-light); }
+  .contrast-after .accent-bar { position: absolute; left: 0; top: 12px; bottom: 12px; width: 3px; background: var(--purple); border-radius: 2px; }
 
   /* ── Buttons ── */
   .btn-primary {
     display: block; width: calc(100% - 32px); margin: 0 auto 10px;
-    padding: 16px; border-radius: 28px; border: none;
-    background: var(--text); color: #fff; font-size: 16px; font-weight: 600;
-    cursor: pointer; text-align: center;
+    padding: 12px 24px; border-radius: var(--radius-sm); border: none;
+    background: var(--green); color: #1E1E1E; font-size: 15px; font-weight: 600;
+    cursor: pointer; text-align: center; font-family: var(--font);
   }
-  .btn-primary:active { opacity: .85; }
+  .btn-primary:active { background: rgba(29,240,187,.85); }
+  .btn-primary:focus-visible { box-shadow: 0 0 0 3px rgba(29,240,187,.4); outline: none; }
   .btn-secondary {
     display: block; width: calc(100% - 32px); margin: 0 auto 10px;
-    padding: 14px; border-radius: 28px; border: none;
-    background: transparent; color: var(--text2); font-size: 15px; font-weight: 500;
-    cursor: pointer; text-align: center;
+    padding: 11px 20px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border-hover); background: rgba(255,255,255,.08);
+    color: var(--text-primary); font-size: 15px; font-weight: 600;
+    cursor: pointer; text-align: center; font-family: var(--font);
   }
-  .btn-teal {
+  .btn-secondary:active { background: rgba(255,255,255,.12); }
+  .btn-gradient {
     display: block; width: calc(100% - 32px); margin: 0 auto 10px;
-    padding: 16px; border-radius: 28px; border: none;
-    background: var(--teal); color: #fff; font-size: 16px; font-weight: 600;
-    cursor: pointer; text-align: center;
+    padding: 12px 28px; border-radius: var(--radius-sm); border: none;
+    background: var(--gradient); color: #fff; font-size: 15px; font-weight: 600;
+    cursor: pointer; text-align: center; font-family: var(--font);
   }
-  .btn-teal:active { opacity: .85; }
+  .btn-gradient:active { opacity: .85; }
+  .btn-ghost {
+    display: block; width: calc(100% - 32px); margin: 0 auto 10px;
+    padding: 10px 20px; border-radius: var(--radius-sm);
+    border: 1px solid var(--purple); background: transparent;
+    color: var(--purple-light); font-size: 14px; font-weight: 600;
+    cursor: pointer; text-align: center; font-family: var(--font);
+  }
   .btn-danger-text {
     display: block; width: calc(100% - 32px); margin: 0 auto 10px;
-    padding: 14px; border-radius: 28px; border: none;
-    background: transparent; color: var(--red); font-size: 15px; font-weight: 500;
-    cursor: pointer; text-align: center;
+    padding: 12px; border-radius: var(--radius-sm); border: none;
+    background: transparent; color: var(--red); font-size: 14px; font-weight: 600;
+    cursor: pointer; text-align: center; font-family: var(--font);
   }
 
   /* ── Device selector ── */
   .device-list { padding: 0 16px; }
   .device-card {
     display: flex; align-items: center; gap: 14px; padding: 14px 16px;
-    background: var(--card); border-radius: var(--radius-sm); margin-bottom: 8px;
+    background: var(--surface1); border-radius: var(--radius-card); margin-bottom: 8px;
     cursor: pointer; border: 2px solid transparent; transition: border-color .15s;
+    box-shadow: var(--shadow-card);
   }
-  .device-card.selected { border-color: var(--teal); }
+  .device-card:active { background: var(--surface3); }
+  .device-card.selected { border-color: var(--green); }
   .device-card .cam-icon {
-    width: 44px; height: 44px; border-radius: 10px; background: var(--bg);
+    width: 44px; height: 44px; border-radius: var(--radius-sm); background: var(--surface3);
     display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
   }
   .device-card .cam-info { flex: 1; }
   .device-card .cam-info .name { font-size: 15px; font-weight: 600; }
-  .device-card .cam-info .sub { font-size: 12px; color: var(--text2); }
+  .device-card .cam-info .sub { font-size: 12px; color: var(--text-muted); }
   .device-card .check-circle {
-    width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border);
+    width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--text-muted);
     display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s;
   }
-  .device-card.selected .check-circle { border-color: var(--teal); background: var(--teal); color: #fff; }
-  .device-card .already { font-size: 11px; color: var(--teal); font-weight: 600; }
+  .device-card.selected .check-circle { border-color: var(--green); background: var(--green); color: #1E1E1E; }
+  .device-card .already { font-size: 11px; color: var(--green); font-weight: 600; }
 
-  /* ── Pricing toggle ── */
+  /* ── Pricing toggle (pill style) ── */
   .pricing-toggle {
-    display: flex; background: var(--bg); border-radius: 10px; padding: 3px; margin: 0 16px 16px;
+    display: flex; background: var(--surface1); border-radius: var(--radius-pill); padding: 3px;
+    margin: 0 16px 16px; border: 1px solid var(--border);
   }
   .pricing-toggle button {
-    flex: 1; padding: 10px; border: none; border-radius: 8px;
-    font-size: 14px; font-weight: 600; cursor: pointer;
-    background: transparent; color: var(--text2); transition: all .15s;
+    flex: 1; padding: 8px 16px; border: none; border-radius: var(--radius-pill);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    background: transparent; color: var(--text-muted); transition: all .15s;
+    font-family: var(--font);
   }
-  .pricing-toggle button.active { background: var(--card); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
-  .pricing-toggle .save-tag { font-size: 11px; color: var(--teal); font-weight: 600; }
+  .pricing-toggle button.active { background: var(--green); color: #1E1E1E; }
+  .pricing-toggle .save-tag { font-size: 10px; color: var(--green); font-weight: 600; }
+  .pricing-toggle button.active .save-tag { color: #1E1E1E; }
 
   /* ── Summary ── */
-  .summary-row { display: flex; justify-content: space-between; padding: 10px 20px; font-size: 15px; }
-  .summary-row.total { font-weight: 700; font-size: 16px; border-top: 1px solid var(--border); padding-top: 14px; margin-top: 4px; }
+  .summary-row { display: flex; justify-content: space-between; padding: 10px 20px; font-size: 14px; color: var(--text-secondary); }
+  .summary-row.total { font-weight: 600; font-size: 16px; color: var(--text-primary); border-top: 1px solid var(--border-light); padding-top: 14px; margin-top: 4px; }
 
   /* ── Toast ── */
   .toast {
     position: fixed; bottom: calc(var(--nav-h) + var(--safe-bottom) + 20px);
     left: 50%; transform: translateX(-50%) translateY(100px);
-    background: #1a1a1a; color: #fff; padding: 14px 24px;
-    border-radius: 28px; font-size: 14px; font-weight: 500;
+    background: var(--surface2); color: var(--text-primary); padding: 14px 24px;
+    border-radius: var(--radius-pill); font-size: 14px; font-weight: 600;
     white-space: nowrap; z-index: 200; opacity: 0;
+    border: 1px solid var(--border-light);
     transition: transform .35s cubic-bezier(.175,.885,.32,1.275), opacity .3s;
     display: flex; align-items: center; gap: 8px;
   }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast .toast-icon { color: var(--green); }
 
   /* ── Bottom sheet ── */
   .sheet-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 300;
+    position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 300;
     display: none; opacity: 0; transition: opacity .25s;
   }
   .sheet-overlay.show { display: block; opacity: 1; }
   .sheet {
     position: fixed; bottom: 0; left: 0; right: 0; max-width: 393px;
-    margin: 0 auto; background: var(--card);
-    border-radius: 20px 20px 0 0; z-index: 301;
+    margin: 0 auto; background: var(--surface1);
+    border-radius: var(--radius-sheet) var(--radius-sheet) 0 0; z-index: 301;
     transform: translateY(100%); transition: transform .3s cubic-bezier(.25,.1,.25,1);
     padding: 8px 0 calc(var(--safe-bottom) + 20px);
     max-height: 80vh; overflow-y: auto;
   }
   .sheet.show { transform: translateY(0); }
-  .sheet-handle { width: 36px; height: 4px; background: #d1d5db; border-radius: 2px; margin: 4px auto 16px; }
-  .sheet-title { font-size: 18px; font-weight: 700; padding: 0 20px 12px; }
+  .sheet-handle { width: 36px; height: 4px; background: var(--text-muted); border-radius: 2px; margin: 8px auto 16px; }
+  .sheet-title { font-size: 18px; font-weight: 600; padding: 0 20px 12px; }
   .sheet-body { padding: 0 20px; }
-  .sheet-body p { font-size: 14px; color: var(--text2); line-height: 1.5; margin-bottom: 16px; }
+  .sheet-body p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; margin-bottom: 16px; }
 
-  /* ── System disclosure modal (Apple-style) ── */
+  /* ── System modal (Apple-style) ── */
   .system-modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 400;
+    position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 400;
     display: none; align-items: center; justify-content: center;
     opacity: 0; transition: opacity .2s;
   }
   .system-modal-overlay.show { display: flex; opacity: 1; }
   .system-modal {
-    width: 300px; background: #f2f2f7; border-radius: 14px; overflow: hidden;
-    text-align: center; font-family: var(--font);
+    width: 300px; background: var(--surface2); border-radius: 14px; overflow: hidden;
+    text-align: center; border: 1px solid var(--border-light);
     transform: scale(.95); transition: transform .2s;
   }
   .system-modal-overlay.show .system-modal { transform: scale(1); }
   .system-modal .modal-content { padding: 20px 20px 16px; }
   .system-modal .modal-content .modal-icon {
-    width: 40px; height: 40px; margin: 0 auto 10px; border-radius: 8px;
-    background: linear-gradient(135deg, #7c3aed, #5b4bff);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 16px; font-weight: 700;
+    width: 40px; height: 40px; margin: 0 auto 10px; border-radius: var(--radius-sm);
+    background: var(--surface3); display: flex; align-items: center; justify-content: center;
+    color: var(--green); font-size: 16px; font-weight: 700;
   }
   .system-modal .modal-content h3 { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
-  .system-modal .modal-content p { font-size: 13px; color: #6b6b6b; line-height: 1.45; margin-bottom: 0; }
-  .system-modal .modal-content .domain { font-size: 12px; color: #8e8e93; margin-top: 10px; }
-  .system-modal .modal-buttons { border-top: 0.5px solid #c6c6c8; display: flex; }
+  .system-modal .modal-content p { font-size: 13px; color: var(--text-muted); line-height: 1.45; margin-bottom: 0; }
+  .system-modal .modal-content .domain { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .system-modal .modal-buttons { border-top: 1px solid var(--border-light); display: flex; }
   .system-modal .modal-buttons button {
     flex: 1; padding: 12px; border: none; background: transparent;
     font-size: 17px; font-family: var(--font); cursor: pointer;
   }
   .system-modal .modal-buttons button:first-child {
-    border-right: 0.5px solid #c6c6c8; color: #007aff; font-weight: 400;
+    border-right: 1px solid var(--border-light); color: var(--text-muted); font-weight: 400;
   }
-  .system-modal .modal-buttons button:last-child {
-    color: #007aff; font-weight: 600;
-  }
+  .system-modal .modal-buttons button:last-child { color: var(--green); font-weight: 600; }
 
-  /* ── Web checkout mockup screen ── */
+  /* ── Web checkout / cancel screens ── */
   .web-chrome {
-    background: #fff; flex-shrink: 0;
-    border-bottom: 1px solid var(--border); padding: 6px 16px 8px;
+    background: var(--surface1); flex-shrink: 0;
+    border-bottom: 1px solid var(--border-light); padding: 6px 16px 8px;
   }
   .web-url-bar {
-    display: flex; align-items: center; gap: 8px; background: #f2f2f7;
-    border-radius: 10px; padding: 8px 12px; font-size: 13px; color: #8e8e93;
+    display: flex; align-items: center; gap: 8px; background: var(--surface3);
+    border-radius: var(--radius-pill); padding: 8px 12px; font-size: 13px; color: var(--text-muted);
   }
-  .web-url-bar .lock { font-size: 11px; }
-  .web-url-bar .url-text { flex: 1; }
+  .web-url-bar .lock { font-size: 11px; color: var(--green); }
+  .web-url-bar .url-text { flex: 1; color: var(--text-secondary); }
   .web-url-bar .done-btn {
-    font-size: 14px; font-weight: 600; color: #007aff;
-    border: none; background: none; cursor: pointer;
+    font-size: 14px; font-weight: 600; color: var(--green);
+    border: none; background: none; cursor: pointer; font-family: var(--font);
   }
-  .web-body { flex: 1; overflow-y: auto; background: #f7f7f7; }
+  .web-body { flex: 1; overflow-y: auto; background: var(--bg); }
   .web-body::-webkit-scrollbar { display: none; }
 
-  .stripe-header {
-    background: #fff; padding: 24px 20px 20px; border-bottom: 1px solid #eee;
-  }
+  .stripe-header { background: var(--surface1); padding: 24px 20px 20px; border-bottom: 1px solid var(--border); }
   .stripe-header .powered-by {
-    font-size: 11px; color: #8e8e93; display: flex; align-items: center; gap: 4px; margin-bottom: 12px;
+    font-size: 11px; color: var(--text-muted); display: flex; align-items: center; gap: 4px; margin-bottom: 12px;
   }
   .stripe-header .powered-by svg { width: 36px; height: 14px; }
-  .stripe-header .merchant { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .stripe-header .merchant { display: flex; align-items: center; gap: 10px; }
   .stripe-header .merchant-logo {
-    width: 36px; height: 36px; border-radius: 8px; background: #1a1a1a;
+    width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--green);
     display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 10px; font-weight: 700;
+    color: #1E1E1E; font-size: 14px; font-weight: 700;
   }
   .stripe-header .merchant-name { font-size: 16px; font-weight: 600; }
-  .stripe-order-summary { background: #fff; padding: 16px 20px; margin-bottom: 8px; }
+  .stripe-order-summary { background: var(--surface1); padding: 16px 20px; margin-top: 8px; }
   .stripe-line-item {
     display: flex; justify-content: space-between; padding: 8px 0;
-    font-size: 14px; border-bottom: 1px solid #f0f0f0;
+    font-size: 14px; border-bottom: 1px solid var(--border-light); color: var(--text-secondary);
   }
   .stripe-line-item:last-child { border: none; }
-  .stripe-line-item .item-name { color: #333; }
-  .stripe-line-item .item-price { font-weight: 600; }
+  .stripe-line-item .item-price { font-weight: 600; color: var(--text-primary); }
   .stripe-line-total {
     display: flex; justify-content: space-between; padding: 12px 0 0;
-    font-size: 16px; font-weight: 700; border-top: 1px solid #e5e5e5; margin-top: 4px;
+    font-size: 16px; font-weight: 600; border-top: 1px solid var(--border-light); margin-top: 4px;
   }
-  .stripe-form { background: #fff; padding: 20px; margin-top: 8px; }
-  .stripe-form label { font-size: 13px; font-weight: 500; color: #555; display: block; margin-bottom: 4px; }
+  .stripe-form { background: var(--surface1); padding: 20px; margin-top: 8px; }
+  .stripe-form label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 4px; }
   .stripe-form .field {
-    width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
-    font-size: 15px; margin-bottom: 14px; background: #fafafa; color: #333;
+    width: 100%; padding: 12px 16px; border: 1px solid var(--border-light); border-radius: var(--radius-sm);
+    font-size: 15px; margin-bottom: 14px; background: var(--surface2); color: var(--text-primary);
     font-family: var(--font);
   }
+  .stripe-form .field:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(29,240,187,.15); outline: none; }
   .stripe-form .field-row { display: flex; gap: 10px; }
   .stripe-form .field-row > div { flex: 1; }
   .stripe-form .btn-stripe {
-    width: 100%; padding: 14px; border: none; border-radius: 8px;
-    background: #5b4bff; color: #fff; font-size: 16px; font-weight: 600;
+    width: 100%; padding: 12px 24px; border: none; border-radius: var(--radius-sm);
+    background: var(--green); color: #1E1E1E; font-size: 15px; font-weight: 600;
     cursor: pointer; margin-top: 4px; font-family: var(--font);
   }
-  .stripe-form .btn-stripe:active { opacity: .85; }
+  .stripe-form .btn-stripe:active { background: rgba(29,240,187,.85); }
 
-  /* ── Manage add-on screen ── */
+  /* ── Manage add-on ── */
   .manage-header { text-align: center; padding: 20px 20px 0; }
   .manage-header .addon-badge {
     width: 56px; height: 56px; border-radius: 16px;
-    background: linear-gradient(135deg, #7c3aed, #5b4bff);
-    display: flex; align-items: center; justify-content: center;
-    color: #fff; font-size: 20px; font-weight: 700; margin: 0 auto 12px;
+    background: var(--purple); display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px; font-weight: 600; margin: 0 auto 12px;
+    box-shadow: 0 0 20px rgba(78,47,210,.3);
   }
-  .manage-header h2 { font-size: 22px; font-weight: 700; }
-  .manage-header .status { font-size: 13px; color: var(--teal); font-weight: 600; margin-top: 4px; }
+  .manage-header h2 { font-size: 22px; font-weight: 600; }
+  .manage-header .status {
+    font-size: 12px; font-weight: 600; margin-top: 6px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .manage-header .status .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+  .manage-header .status span { color: var(--green); }
   .info-rows { padding: 16px; }
   .info-row {
     display: flex; justify-content: space-between; align-items: center;
-    padding: 14px 16px; background: var(--card); border-radius: var(--radius-sm); margin-bottom: 8px;
+    padding: 14px 16px; background: var(--surface1); border-radius: var(--radius-sm);
+    margin-bottom: 8px; border: 1px solid var(--border);
   }
-  .info-row .info-label { font-size: 14px; color: var(--text2); }
+  .info-row .info-label { font-size: 13px; color: var(--text-muted); }
   .info-row .info-value { font-size: 14px; font-weight: 600; }
 
   /* ── T3 Comparison ── */
   .t3-compare {
-    margin: 0 16px 16px; padding: 20px; background: linear-gradient(135deg, #fef3c7, #fde68a);
-    border-radius: var(--radius); text-align: center;
+    margin: 0 16px 16px; padding: 20px; background: var(--gradient);
+    border-radius: var(--radius-card); text-align: center; color: #fff;
   }
-  .t3-compare h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
-  .t3-compare p { font-size: 14px; color: #92400e; line-height: 1.5; margin-bottom: 4px; }
-  .t3-compare .savings { font-size: 22px; font-weight: 800; color: #92400e; margin: 10px 0; }
-
-  /* ── Cancel sheet ── */
-  .cancel-warning {
-    background: var(--red-bg); border-radius: var(--radius-sm);
-    padding: 14px 16px; margin-bottom: 16px;
+  .t3-compare h3 { font-size: 17px; font-weight: 600; margin-bottom: 6px; }
+  .t3-compare p { font-size: 14px; opacity: .9; line-height: 1.5; margin-bottom: 4px; }
+  .t3-compare .savings { font-size: 22px; font-weight: 700; margin: 10px 0; }
+  .t3-compare .save-pill {
+    font-weight: 700; background: rgba(255,255,255,.2); display: inline-block;
+    padding: 4px 14px; border-radius: var(--radius-pill); font-size: 13px;
   }
-  .cancel-warning p { color: var(--text) !important; font-size: 14px !important; }
 
   /* ── Misc ── */
   .px-20 { padding-left: 20px; padding-right: 20px; }
   .mb-16 { margin-bottom: 16px; }
-
-  /* ── Flow labels ── */
   .flow-label {
     position: fixed; top: 8px; left: 50%; transform: translateX(-50%);
-    font-size: 10px; font-weight: 700; background: rgba(0,0,0,.7);
-    color: #fff; padding: 4px 12px; border-radius: 20px; z-index: 500;
+    font-size: 10px; font-weight: 600; background: rgba(255,255,255,.12);
+    color: var(--text-secondary); padding: 4px 12px; border-radius: var(--radius-pill); z-index: 500;
     letter-spacing: .5px; text-transform: uppercase; pointer-events: none;
+    backdrop-filter: blur(8px); border: 1px solid var(--border-light);
   }
 </style>
 </head>
 <body>
 
 <div class="phone" id="phone">
-  <!-- Status Bar -->
   <div class="status-bar">
     <span>1:40</span>
     <div class="right">
       <span>SOS</span>
       <svg width="16" height="12" viewBox="0 0 16 12"><path d="M1 9h2v3H1zm4-3h2v6H5zm4-3h2v9H9zm4-3h2v12h-2z" fill="currentColor"/></svg>
-      <span style="font-size:12px;border:1.5px solid #333;border-radius:3px;padding:0 3px;">99</span>
+      <span style="font-size:12px;border:1.5px solid #fff;border-radius:3px;padding:0 3px;">99</span>
     </div>
   </div>
 
@@ -464,10 +498,10 @@
       <div class="info">
         <h2>Cam Plus</h2>
         <p>Active until Jan 29, 2027</p>
-        <p style="font-weight:600; font-size:12px; margin-top:2px;">Member Since 2026</p>
+        <p style="font-weight:600; font-size:12px; margin-top:2px; color:var(--text-muted);">Member since 2026</p>
       </div>
       <svg class="shield" viewBox="0 0 56 56" fill="none">
-        <path d="M28 4L8 14v14c0 12.4 8.5 24 20 28 11.5-4 20-15.6 20-28V14L28 4z" stroke="#5b4bff" stroke-width="3" fill="none"/>
+        <path d="M28 4L8 14v14c0 12.4 8.5 24 20 28 11.5-4 20-15.6 20-28V14L28 4z" stroke="#4E2FD2" stroke-width="3" fill="none"/>
       </svg>
     </div>
     <div class="card-group">
@@ -512,54 +546,51 @@
       <button class="back-btn" onclick="showScreen('screen-account')">‹</button>
       <h1>Services</h1>
     </div>
-
-    <div class="section-title">Your Plan</div>
-
-    <!-- Parent subscription -->
+    <div class="section-title">Your plan</div>
     <div class="service-item" id="parent-sub-card">
       <div class="top">
         <div>
           <h3>Cam Plus <span>· Annual x 1</span></h3>
-          <div class="meta"><span>🌐</span><span>Renews Jan 29, 2027</span></div>
+          <div class="meta">
+            <span style="color:var(--green);">●</span>
+            <span>Renews Jan 29, 2027</span>
+          </div>
         </div>
         <span class="dots" onclick="event.stopPropagation(); openSheet('sheet-parent-options')">···</span>
       </div>
-      <!-- Nested active add-ons -->
       <div class="addon-nested" id="addon-nested-area" style="display:none;">
         <div class="addon-row" id="addon-row-frontdoor" style="display:none;" onclick="showScreen('screen-manage-addon')">
-          <div class="addon-icon">AI</div>
+          <div class="addon-icon">✦</div>
           <div class="addon-info">
             <div class="name">Pro AI · Front Door</div>
             <div class="detail">$5.99/mo · Renews Feb 8, 2027</div>
           </div>
-          <span class="chevron" style="color:#c4c4c4;">›</span>
+          <span class="chevron" style="color:var(--text-muted);">›</span>
         </div>
         <div class="addon-row" id="addon-row-backyard" style="display:none;" onclick="showScreen('screen-manage-addon-backyard')">
-          <div class="addon-icon">AI</div>
+          <div class="addon-icon">✦</div>
           <div class="addon-info">
             <div class="name">Pro AI · Backyard</div>
             <div class="detail">$5.99/mo · Renews Feb 8, 2027</div>
           </div>
-          <span class="chevron" style="color:#c4c4c4;">›</span>
+          <span class="chevron" style="color:var(--text-muted);">›</span>
         </div>
         <div class="addon-row" id="addon-row-garage" style="display:none;" onclick="showScreen('screen-manage-addon')">
-          <div class="addon-icon">AI</div>
+          <div class="addon-icon">✦</div>
           <div class="addon-info">
             <div class="name">Pro AI · Garage</div>
             <div class="detail">$5.99/mo · Renews Feb 8, 2027</div>
           </div>
-          <span class="chevron" style="color:#c4c4c4;">›</span>
+          <span class="chevron" style="color:var(--text-muted);">›</span>
         </div>
       </div>
     </div>
 
-    <div class="section-title">Available Add-Ons</div>
-
-    <!-- REDESIGNED: Pro AI as compact tappable CTA row -->
+    <div class="section-title">Available add-ons</div>
     <div class="addon-cta" onclick="showScreen('screen-paywall')">
-      <div class="cta-icon">AI</div>
+      <div class="cta-icon">✦</div>
       <div class="cta-body">
-        <div class="cta-title">Pro AI <span class="new-badge">NEW</span></div>
+        <div class="cta-title">Pro AI <span class="ai-badge">✦ NEW</span></div>
         <div class="cta-desc">Smarter alerts, noise filter, video search</div>
       </div>
       <div class="cta-price">
@@ -568,27 +599,21 @@
       </div>
       <span class="cta-chevron">›</span>
     </div>
-
-    <!-- Future add-on placeholder -->
-    <div class="addon-cta" style="opacity:.45; pointer-events:none;">
-      <div class="cta-icon" style="background:linear-gradient(135deg,#0ea5e9,#0284c7);">60d</div>
+    <div class="addon-cta" style="opacity:.35; pointer-events:none;">
+      <div class="cta-icon" style="background:var(--surface3); color:var(--text-muted);">60d</div>
       <div class="cta-body">
-        <div class="cta-title">60-Day Cloud Storage</div>
+        <div class="cta-title" style="color:var(--text-muted);">60-day cloud storage</div>
         <div class="cta-desc">Extended video history per camera</div>
       </div>
-      <div class="cta-price">
-        <div class="amount" style="font-size:12px; color:var(--text2); font-weight:500;">Coming soon</div>
-      </div>
+      <div class="cta-price"><div class="amount" style="font-size:12px; color:var(--text-muted); font-weight:400;">Coming soon</div></div>
     </div>
-
-    <!-- Cam Unlimited upsell -->
     <div style="text-align:center; padding: 20px 16px 8px;">
-      <p style="font-size:14px; color:var(--text2);">Upgrade to <span style="color:var(--purple); font-weight:600;">Cam Unlimited</span></p>
-      <p style="font-size:12px; color:var(--text2);">Streamline your home security with all-in-one coverage for every camera!</p>
+      <p style="font-size:14px; color:var(--text-muted);">Upgrade to <span style="color:var(--purple-light); font-weight:600;">Cam Unlimited</span></p>
+      <p style="font-size:12px; color:var(--text-muted);">All-in-one coverage for every camera</p>
     </div>
   </div>
 
-  <!-- ════════ SCREEN: Paywall / Detail ════════ -->
+  <!-- ════════ SCREEN: Paywall ════════ -->
   <div class="screen" id="screen-paywall">
     <div class="screen-header">
       <button class="back-btn" onclick="showScreen('screen-services')">‹</button>
@@ -600,37 +625,37 @@
     </div>
     <div class="contrast-box">
       <div class="contrast-before">
-        <div class="label">Standard Alert</div>
+        <div class="label">Standard alert</div>
         Motion detected at 11:42 PM
       </div>
       <div class="contrast-after">
-        <div class="teal-bar"></div>
-        <div class="label">Pro AI Alert</div>
+        <div class="accent-bar"></div>
+        <div class="label">✦ Pro AI alert</div>
         A person in a blue jacket left a package at the front door and walked back to a white delivery van.
       </div>
     </div>
     <div class="card" style="margin-bottom:16px;">
-      <ul class="storefront-features">
-        <li><span class="check">✓</span><div><strong>Descriptive Alerts</strong><br><span style="color:var(--text2);">Natural-language event descriptions</span></div></li>
-        <li><span class="check">✓</span><div><strong>NBD Filter</strong><br><span style="color:var(--text2);">3-level notification priority: All / Important / Critical</span></div></li>
-        <li><span class="check">✓</span><div><strong>Video Search</strong><br><span style="color:var(--text2);">Find events with natural language queries</span></div></li>
+      <ul class="feature-list">
+        <li><span class="check">✦</span><div><strong>Descriptive alerts</strong><br><span style="color:var(--text-muted);">Natural-language event descriptions</span></div></li>
+        <li><span class="check">✦</span><div><strong>NBD filter</strong><br><span style="color:var(--text-muted);">3-level priority: All / Important / Critical</span></div></li>
+        <li><span class="check">✦</span><div><strong>Video search</strong><br><span style="color:var(--text-muted);">Find events with natural language</span></div></li>
       </ul>
     </div>
     <div style="text-align:center; padding:0 20px 8px;">
-      <div style="font-size:28px; font-weight:800;">$5.99</div>
-      <div style="font-size:14px; color:var(--text2);">/camera/month · or $59.99/year</div>
+      <div style="font-size:28px; font-weight:700; color:var(--green);">$5.99</div>
+      <div style="font-size:13px; color:var(--text-muted);">/camera/month · or $59.99/year</div>
     </div>
-    <button class="btn-primary" onclick="showScreen('screen-device-select')">Add Pro AI to a Camera</button>
+    <button class="btn-primary" onclick="showScreen('screen-device-select')">Add Pro AI to a camera</button>
     <button class="btn-secondary" onclick="showScreen('screen-services')">Maybe later</button>
   </div>
 
-  <!-- ════════ SCREEN: Device Selection (in-app, before web jump) ════════ -->
+  <!-- ════════ SCREEN: Device Selection ════════ -->
   <div class="screen" id="screen-device-select">
     <div class="screen-header">
       <button class="back-btn" onclick="showScreen('screen-paywall')">‹</button>
-      <h1 style="font-size:20px;">Select Camera</h1>
+      <h1 style="font-size:20px;">Select camera</h1>
     </div>
-    <p class="px-20 mb-16" style="font-size:14px; color:var(--text2);">Choose which camera(s) to enable Pro AI on. You'll complete checkout on wyze.com.</p>
+    <p class="px-20 mb-16" style="font-size:14px; color:var(--text-muted);">Choose which camera(s) to enable Pro AI on. You'll complete checkout on wyze.com.</p>
     <div class="pricing-toggle">
       <button class="active" onclick="setPricing(this,'monthly')">Monthly</button>
       <button onclick="setPricing(this,'yearly')">Yearly <span class="save-tag">Save 17%</span></button>
@@ -658,27 +683,17 @@
       </div>
     </div>
     <div id="select-summary" style="padding-top:16px; display:none;">
-      <div class="summary-row">
-        <span>Pro AI add-on</span>
-        <span id="summary-device-count">0 cameras</span>
-      </div>
-      <div class="summary-row total">
-        <span>Monthly total</span>
-        <span id="summary-price">$0.00</span>
-      </div>
+      <div class="summary-row"><span>Pro AI add-on</span><span id="summary-device-count">0 cameras</span></div>
+      <div class="summary-row total"><span>Monthly total</span><span id="summary-price">$0.00</span></div>
     </div>
     <div style="padding:16px 0;">
-      <!-- CTA now opens system disclosure modal, not a confirm screen -->
-      <button class="btn-primary" id="btn-continue-purchase" onclick="showSystemModal()" style="opacity:.4; pointer-events:none;">
-        Continue to wyze.com
-      </button>
-      <div style="text-align:center; font-size:12px; color:var(--text2); padding-top:4px;">Checkout handled securely on wyze.com via Stripe</div>
+      <button class="btn-primary" id="btn-continue-purchase" onclick="showSystemModal()" style="opacity:.4; pointer-events:none;">Continue to wyze.com</button>
+      <div style="text-align:center; font-size:12px; color:var(--text-muted); padding-top:4px;">Checkout handled securely on wyze.com via Stripe</div>
     </div>
   </div>
 
-  <!-- ════════ SCREEN: Web Checkout (Stripe on wyze.com) ════════ -->
-  <div class="screen" id="screen-web-checkout" style="padding-bottom:0; background:#fff;">
-    <!-- Browser chrome -->
+  <!-- ════════ SCREEN: Web Checkout ════════ -->
+  <div class="screen" id="screen-web-checkout" style="padding-bottom:0;">
     <div class="web-chrome">
       <div class="web-url-bar">
         <span class="lock">🔒</span>
@@ -686,29 +701,17 @@
         <button class="done-btn" onclick="returnToApp()">Done</button>
       </div>
     </div>
-    <!-- Stripe checkout body -->
     <div class="web-body">
       <div class="stripe-header">
-        <div class="powered-by">
-          Powered by
-          <svg viewBox="0 0 60 25" fill="none"><text x="0" y="18" font-size="16" font-weight="700" fill="#635bff" font-family="system-ui">stripe</text></svg>
-        </div>
-        <div class="merchant">
-          <div class="merchant-logo">W</div>
-          <div class="merchant-name">Wyze Labs, Inc.</div>
-        </div>
+        <div class="powered-by">Powered by <svg viewBox="0 0 60 25" fill="none"><text x="0" y="18" font-size="16" font-weight="700" fill="#635bff" font-family="system-ui">stripe</text></svg></div>
+        <div class="merchant"><div class="merchant-logo">W</div><div class="merchant-name">Wyze Labs, Inc.</div></div>
       </div>
-
       <div class="stripe-order-summary">
-        <div style="font-size:13px; font-weight:600; color:#555; margin-bottom:8px;">Order summary</div>
+        <div style="font-size:12px; font-weight:600; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Order summary</div>
         <div id="stripe-line-items"></div>
-        <div class="stripe-line-total">
-          <span>Total</span>
-          <span id="stripe-total"></span>
-        </div>
-        <div style="font-size:11px; color:#8e8e93; margin-top:6px;" id="stripe-billing-note"></div>
+        <div class="stripe-line-total"><span>Total</span><span id="stripe-total"></span></div>
+        <div style="font-size:11px; color:var(--text-muted); margin-top:6px;" id="stripe-billing-note"></div>
       </div>
-
       <div class="stripe-form">
         <label>Card number</label>
         <input class="field" type="text" value="4242 4242 4242 4242" readonly>
@@ -719,9 +722,8 @@
         <label>Name on card</label>
         <input class="field" type="text" value="Sunny Wu" readonly>
         <button class="btn-stripe" onclick="completeStripeCheckout()">Subscribe</button>
-        <div style="text-align:center; font-size:11px; color:#8e8e93; margin-top:10px;">
-          By subscribing, you agree to Wyze's Terms of Service.
-          <br>Cancel anytime from Account > Services.
+        <div style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:10px;">
+          By subscribing, you agree to Wyze's Terms of Service.<br>Cancel anytime from Account > Services.
         </div>
       </div>
     </div>
@@ -731,12 +733,12 @@
   <div class="screen" id="screen-manage-addon">
     <div class="screen-header">
       <button class="back-btn" onclick="showScreen('screen-services')">‹</button>
-      <h1 style="font-size:20px;">Manage Add-On</h1>
+      <h1 style="font-size:20px;">Manage add-on</h1>
     </div>
     <div class="manage-header">
-      <div class="addon-badge">AI</div>
+      <div class="addon-badge">✦</div>
       <h2>Pro AI</h2>
-      <div class="status">Active</div>
+      <div class="status"><div class="dot"></div><span>Active</span></div>
     </div>
     <div class="info-rows">
       <div class="info-row"><span class="info-label">Camera</span><span class="info-value">Front Door</span></div>
@@ -744,16 +746,15 @@
       <div class="info-row"><span class="info-label">Next renewal</span><span class="info-value">Feb 8, 2027</span></div>
       <div class="info-row"><span class="info-label">Parent plan</span><span class="info-value">Cam Plus · Annual</span></div>
     </div>
-    <div class="section-title" style="padding-top:8px;">Features Included</div>
+    <div class="section-title">Features included</div>
     <div class="card">
-      <ul class="storefront-features" style="font-size:13px;">
-        <li><span class="check">✓</span> Descriptive Alerts</li>
-        <li><span class="check">✓</span> NBD Notification Filter</li>
-        <li><span class="check">✓</span> Video Search</li>
+      <ul class="feature-list" style="font-size:13px;">
+        <li><span class="check">✦</span> Descriptive alerts</li>
+        <li><span class="check">✦</span> NBD notification filter</li>
+        <li><span class="check">✦</span> Video search</li>
       </ul>
     </div>
-    <!-- All subscription management happens on web -->
-    <button class="btn-primary" onclick="showSystemModal('manage')" style="background:var(--purple);">Manage on wyze.com</button>
+    <button class="btn-ghost" onclick="showSystemModal('manage')">Manage on wyze.com</button>
     <button class="btn-danger-text" onclick="showSystemModal('cancel-frontdoor')">Cancel Pro AI on this camera</button>
   </div>
 
@@ -761,12 +762,12 @@
   <div class="screen" id="screen-manage-addon-backyard">
     <div class="screen-header">
       <button class="back-btn" onclick="showScreen('screen-services')">‹</button>
-      <h1 style="font-size:20px;">Manage Add-On</h1>
+      <h1 style="font-size:20px;">Manage add-on</h1>
     </div>
     <div class="manage-header">
-      <div class="addon-badge">AI</div>
+      <div class="addon-badge">✦</div>
       <h2>Pro AI</h2>
-      <div class="status">Active</div>
+      <div class="status"><div class="dot"></div><span>Active</span></div>
     </div>
     <div class="info-rows">
       <div class="info-row"><span class="info-label">Camera</span><span class="info-value">Backyard</span></div>
@@ -774,12 +775,12 @@
       <div class="info-row"><span class="info-label">Next renewal</span><span class="info-value">Feb 8, 2027</span></div>
       <div class="info-row"><span class="info-label">Parent plan</span><span class="info-value">Cam Plus · Annual</span></div>
     </div>
-    <button class="btn-primary" onclick="showSystemModal('manage')" style="background:var(--purple);">Manage on wyze.com</button>
+    <button class="btn-ghost" onclick="showSystemModal('manage')">Manage on wyze.com</button>
     <button class="btn-danger-text" onclick="showSystemModal('cancel-backyard')">Cancel Pro AI on this camera</button>
   </div>
 
-  <!-- ════════ SCREEN: Web Cancel (Stripe portal on wyze.com) ════════ -->
-  <div class="screen" id="screen-web-cancel" style="padding-bottom:0; background:#fff;">
+  <!-- ════════ SCREEN: Web Cancel ════════ -->
+  <div class="screen" id="screen-web-cancel" style="padding-bottom:0;">
     <div class="web-chrome">
       <div class="web-url-bar">
         <span class="lock">🔒</span>
@@ -789,48 +790,32 @@
     </div>
     <div class="web-body">
       <div class="stripe-header">
-        <div class="powered-by">
-          Powered by
-          <svg viewBox="0 0 60 25" fill="none"><text x="0" y="18" font-size="16" font-weight="700" fill="#635bff" font-family="system-ui">stripe</text></svg>
-        </div>
-        <div class="merchant">
-          <div class="merchant-logo">W</div>
-          <div class="merchant-name">Wyze Labs, Inc.</div>
-        </div>
+        <div class="powered-by">Powered by <svg viewBox="0 0 60 25" fill="none"><text x="0" y="18" font-size="16" font-weight="700" fill="#635bff" font-family="system-ui">stripe</text></svg></div>
+        <div class="merchant"><div class="merchant-logo">W</div><div class="merchant-name">Wyze Labs, Inc.</div></div>
       </div>
-
       <div class="stripe-order-summary">
-        <div style="font-size:15px; font-weight:700; margin-bottom:14px;">Cancel subscription</div>
-        <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f0f0f0;">
-          <div style="width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#5b4bff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:700;">AI</div>
+        <div style="font-size:15px; font-weight:600; margin-bottom:14px;">Cancel subscription</div>
+        <div style="display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid var(--border-light);">
+          <div style="width:36px;height:36px;border-radius:8px;background:var(--purple);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">✦</div>
           <div style="flex:1;">
             <div style="font-size:14px; font-weight:600;" id="cancel-device-name">Pro AI · Front Door</div>
-            <div style="font-size:12px; color:#8e8e93;">$5.99/month</div>
+            <div style="font-size:12px; color:var(--text-muted);">$5.99/month</div>
           </div>
         </div>
-
-        <div style="background:#fef3c7; border-radius:8px; padding:14px; margin-top:16px;">
-          <div style="font-size:13px; font-weight:600; color:#92400e; margin-bottom:4px;">What you'll lose</div>
-          <div style="font-size:13px; color:#92400e; line-height:1.5;">
-            Descriptive Alerts, NBD Notification Filter, and Video Search will be removed from this camera at the end of your billing period.
+        <div style="background:var(--red-bg); border-left:3px solid var(--red); border-radius:8px; padding:14px; margin-top:16px;">
+          <div style="font-size:13px; font-weight:600; color:var(--red); margin-bottom:4px;">What you'll lose</div>
+          <div style="font-size:13px; color:var(--text-secondary); line-height:1.5;">
+            Descriptive alerts, NBD filter, and video search will be removed from this camera at the end of your billing period.
           </div>
         </div>
-
-        <div style="padding:14px 0; font-size:13px; color:#555; border-bottom:1px solid #f0f0f0;">
-          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-            <span>Access until</span>
-            <span style="font-weight:600;">Feb 8, 2027</span>
-          </div>
-          <div style="display:flex; justify-content:space-between;">
-            <span>You won't be charged again</span>
-            <span style="color:var(--teal); font-weight:600;">✓</span>
-          </div>
+        <div style="padding:14px 0; font-size:13px; color:var(--text-secondary); border-bottom:1px solid var(--border-light);">
+          <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span>Access until</span><span style="font-weight:600;">Feb 8, 2027</span></div>
+          <div style="display:flex; justify-content:space-between;"><span>You won't be charged again</span><span style="color:var(--green); font-weight:600;">✓</span></div>
         </div>
       </div>
-
       <div style="padding:20px;">
-        <button class="btn-stripe" onclick="completeCancelOnWeb()" style="background:#ef4444;">Cancel subscription</button>
-        <button style="width:100%;padding:14px;border:none;border-radius:8px;background:transparent;color:#555;font-size:15px;font-weight:500;cursor:pointer;margin-top:4px;font-family:var(--font);" onclick="returnToApp()">Keep subscription</button>
+        <button class="btn-stripe" onclick="completeCancelOnWeb()" style="background:var(--red); color:#fff;">Cancel subscription</button>
+        <button style="width:100%;padding:12px;border:none;border-radius:8px;background:rgba(255,255,255,.08);color:var(--text-secondary);font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:var(--font);border:1px solid var(--border-hover);" onclick="returnToApp()">Keep subscription</button>
       </div>
     </div>
   </div>
@@ -844,22 +829,22 @@
     <div class="t3-compare">
       <h3>You're spending more than you need to</h3>
       <p>Cam Plus + Pro AI on 3 cameras</p>
-      <p style="font-size:18px; font-weight:700; color:#92400e;">$26.94/month</p>
-      <div style="font-size:28px; margin:12px 0;">↓</div>
+      <p style="font-size:18px; font-weight:700; opacity:1;">$26.94/month</p>
+      <div style="font-size:28px; margin:12px 0; opacity:.6;">↓</div>
       <p>Cam Unlimited Pro covers ALL cameras</p>
       <div class="savings">$19.99/month</div>
-      <p style="font-weight:700; color:#166534; background:#dcfce7; display:inline-block; padding:4px 12px; border-radius:20px; font-size:13px;">Save $6.95/month</p>
+      <div class="save-pill">Save $6.95/month</div>
     </div>
     <div class="card">
       <p style="font-size:14px; font-weight:600; margin-bottom:10px;">Cam Unlimited Pro includes everything you have now, plus:</p>
-      <ul class="storefront-features" style="font-size:13px;">
+      <ul class="feature-list" style="font-size:13px;">
         <li><span class="check">✓</span> Pro AI on <strong>all</strong> cameras — unlimited</li>
         <li><span class="check">✓</span> 60-day cloud video storage</li>
         <li><span class="check">✓</span> Emergency Dispatch</li>
         <li><span class="check">✓</span> Priority support</li>
       </ul>
     </div>
-    <button class="btn-teal" onclick="showToast('Upgrade flow would open here'); showScreen('screen-services')">Switch to Cam Unlimited Pro</button>
+    <button class="btn-gradient" onclick="showToast('Upgrade flow would open here'); showScreen('screen-services')">Switch to Cam Unlimited Pro</button>
     <button class="btn-secondary" onclick="showScreen('screen-services')">Keep current plan</button>
   </div>
 
@@ -867,40 +852,40 @@
   <div class="screen" id="screen-onboarding">
     <div class="screen-header">
       <button class="back-btn" onclick="showScreen('screen-services')">✕</button>
-      <h1 style="font-size:20px;">Pro AI is Active</h1>
+      <h1 style="font-size:20px;">Pro AI is active</h1>
     </div>
     <div style="text-align:center; padding:24px 20px;">
-      <div style="width:72px;height:72px;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#5b4bff);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:700;">AI</div>
-      <h2 style="font-size:24px; font-weight:700; margin-top:16px;">You're all set!</h2>
-      <p style="font-size:14px; color:var(--text2); margin-top:6px; line-height:1.5;" id="onboarding-devices-text">Pro AI is now active on Front Door.</p>
+      <div style="width:72px;height:72px;border-radius:20px;background:var(--purple);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:28px;font-weight:600;box-shadow:0 0 30px rgba(78,47,210,.4);">✦</div>
+      <h2 style="font-size:24px; font-weight:600; margin-top:16px;">You're all set!</h2>
+      <p style="font-size:14px; color:var(--text-muted); margin-top:6px; line-height:1.5;" id="onboarding-devices-text">Pro AI is now active on Front Door.</p>
     </div>
     <div class="card">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;">
         <div>
-          <div style="font-size:15px; font-weight:600;">Descriptive Alerts</div>
-          <div style="font-size:12px; color:var(--text2);">Natural-language event descriptions</div>
+          <div style="font-size:15px; font-weight:600;">Descriptive alerts</div>
+          <div style="font-size:12px; color:var(--text-muted);">Natural-language event descriptions</div>
         </div>
-        <div style="width:44px;height:26px;border-radius:13px;background:var(--teal);position:relative;cursor:pointer;">
-          <div style="width:22px;height:22px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+        <div style="width:50px;height:28px;border-radius:14px;background:var(--green);position:relative;cursor:pointer;">
+          <div style="width:24px;height:24px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;box-shadow:0 1px 3px rgba(0,0,0,.3);"></div>
         </div>
       </div>
-      <div style="border-top:1px solid var(--border); padding-top:14px;">
-        <div style="font-size:15px; font-weight:600; margin-bottom:4px;">Notification Filter</div>
-        <div style="font-size:12px; color:var(--text2); margin-bottom:12px;">Set your alert priority level</div>
+      <div style="border-top:1px solid var(--border-light); padding-top:14px;">
+        <div style="font-size:15px; font-weight:600; margin-bottom:4px;">Notification filter</div>
+        <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Set your alert priority level</div>
         <div style="display:flex; gap:8px;">
-          <button onclick="selectNBD(this)" style="flex:1;padding:10px 0;border-radius:8px;border:2px solid var(--border);background:transparent;font-size:13px;font-weight:600;cursor:pointer;">All</button>
-          <button onclick="selectNBD(this)" style="flex:1;padding:10px 0;border-radius:8px;border:2px solid var(--teal);background:var(--teal-bg);color:var(--teal);font-size:13px;font-weight:600;cursor:pointer;">Important</button>
-          <button onclick="selectNBD(this)" style="flex:1;padding:10px 0;border-radius:8px;border:2px solid var(--border);background:transparent;font-size:13px;font-weight:600;cursor:pointer;">Critical</button>
+          <button onclick="selectNBD(this)" style="flex:1;padding:8px 16px;border-radius:9999px;border:1px solid var(--border-light);background:var(--surface1);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">All</button>
+          <button onclick="selectNBD(this)" style="flex:1;padding:8px 16px;border-radius:9999px;border:none;background:var(--green);color:#1E1E1E;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Important</button>
+          <button onclick="selectNBD(this)" style="flex:1;padding:8px 16px;border-radius:9999px;border:1px solid var(--border-light);background:var(--surface1);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Critical</button>
         </div>
       </div>
     </div>
     <div class="card" style="margin-top:0;">
-      <div style="font-size:15px; font-weight:600; margin-bottom:4px;">Video Search — Try it</div>
-      <div style="font-size:12px; color:var(--text2); margin-bottom:12px;">Search your event history with natural language</div>
+      <div style="font-size:15px; font-weight:600; margin-bottom:4px;">Video search — try it</div>
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Search your event history with natural language</div>
       <div style="display:flex; flex-wrap:wrap; gap:6px;">
-        <span style="font-size:12px; padding:8px 14px; background:var(--bg); border-radius:20px; cursor:pointer;">"Was there a package today?"</span>
-        <span style="font-size:12px; padding:8px 14px; background:var(--bg); border-radius:20px; cursor:pointer;">"FedEx truck yesterday"</span>
-        <span style="font-size:12px; padding:8px 14px; background:var(--bg); border-radius:20px; cursor:pointer;">"When did the dog get out?"</span>
+        <span style="font-size:12px; padding:8px 14px; background:var(--surface3); border-radius:9999px; cursor:pointer; color:var(--text-secondary);">"Was there a package today?"</span>
+        <span style="font-size:12px; padding:8px 14px; background:var(--surface3); border-radius:9999px; cursor:pointer; color:var(--text-secondary);">"FedEx truck yesterday"</span>
+        <span style="font-size:12px; padding:8px 14px; background:var(--surface3); border-radius:9999px; cursor:pointer; color:var(--text-secondary);">"When did the dog get out?"</span>
       </div>
     </div>
     <button class="btn-primary" onclick="showScreen('screen-services')">Done</button>
@@ -927,14 +912,14 @@
   </div>
 </div>
 
-<!-- ════════ SYSTEM DISCLOSURE MODAL (Apple-style) ════════ -->
+<!-- ════════ SYSTEM MODAL ════════ -->
 <div class="system-modal-overlay" id="system-modal-overlay" onclick="closeSystemModal()">
   <div class="system-modal" onclick="event.stopPropagation()">
     <div class="modal-content">
       <div class="modal-icon">W</div>
       <h3 id="modal-title">You are about to leave the Wyze app</h3>
-      <p id="modal-body">You'll be directed to wyze.com to complete your Pro AI subscription. Your selected cameras will be applied automatically.</p>
-      <div class="domain" id="modal-domain">wyze.com — processed by Stripe</div>
+      <p id="modal-body"></p>
+      <div class="domain" id="modal-domain"></div>
     </div>
     <div class="modal-buttons">
       <button onclick="closeSystemModal()">Cancel</button>
@@ -950,27 +935,25 @@
   <div class="sheet-handle"></div>
   <div class="sheet-title">Cam Plus · Annual</div>
   <div class="sheet-body">
-    <div class="card-row" style="padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer;">
+    <div class="card-row" style="padding:14px 0; border-bottom:1px solid var(--border-light); cursor:pointer;">
       <span class="label" style="font-size:15px;">View plan details</span><span class="chevron">›</span>
     </div>
-    <div class="card-row" style="padding:14px 0; border-bottom:1px solid var(--border); cursor:pointer;" onclick="closeSheet(); showScreen('screen-paywall')">
+    <div class="card-row" style="padding:14px 0; border-bottom:1px solid var(--border-light); cursor:pointer;" onclick="closeSheet(); showScreen('screen-paywall')">
       <span class="label" style="font-size:15px;">Add Pro AI to a camera</span><span class="chevron">›</span>
     </div>
     <div class="card-row" style="padding:14px 0; cursor:pointer;">
-      <span class="label" style="font-size:15px; color:var(--text2);">Change plan</span><span class="chevron">›</span>
+      <span class="label" style="font-size:15px; color:var(--text-muted);">Change plan</span><span class="chevron">›</span>
     </div>
   </div>
 </div>
-
-<!-- Cancel sheet removed — cancel now happens on web/Stripe -->
 
 <div class="sheet" id="sheet-t3-nudge">
   <div class="sheet-handle"></div>
   <div class="sheet-title">Save with Cam Unlimited Pro?</div>
   <div class="sheet-body">
     <p>You're now paying <strong>$26.94/month</strong> across Cam Plus and Pro AI on 3 cameras.</p>
-    <p><strong>Cam Unlimited Pro</strong> covers all your cameras for <strong>$19.99/month</strong> — saving you <strong style="color:#166534;">$6.95/month</strong>.</p>
-    <button class="btn-teal" onclick="closeSheet(); showScreen('screen-t3-compare')">See comparison</button>
+    <p><strong>Cam Unlimited Pro</strong> covers all your cameras for <strong>$19.99/month</strong> — saving you <strong style="color:var(--green);">$6.95/month</strong>.</p>
+    <button class="btn-gradient" onclick="closeSheet(); showScreen('screen-t3-compare')">See comparison</button>
     <button class="btn-secondary" onclick="closeSheet()">Not now</button>
   </div>
 </div>
@@ -979,54 +962,39 @@
 <div class="flow-label" id="flow-label" style="display:none;"></div>
 
 <script>
-  // ── State ──
   const state = {
     selectedDevices: new Set(),
     purchasedDevices: new Set(),
     pricingMode: 'monthly',
     monthlyPrice: 5.99,
     yearlyPrice: 59.99,
-    modalIntent: 'checkout', // 'checkout', 'manage', or 'cancel-{deviceId}'
+    modalIntent: 'checkout',
     cancelTarget: null,
   };
-
   const deviceNames = { frontdoor: 'Front Door', backyard: 'Backyard', garage: 'Garage', driveway: 'Driveway' };
 
-  // ── Navigation ──
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     document.getElementById(id).scrollTop = 0;
-
-    // Tab bar visibility — hide on web checkout
     const tabBar = document.getElementById('main-tab-bar');
     tabBar.style.display = (id === 'screen-web-checkout' || id === 'screen-web-cancel') ? 'none' : 'flex';
-
-    // Update active tab
     const tabs = document.querySelectorAll('.tab-bar .tab');
     tabs.forEach(t => t.classList.remove('active'));
     if (['screen-account','screen-services'].includes(id)) tabs[4].classList.add('active');
-
-    // Flow labels
     const labels = {
-      'screen-services': 'Services Tab',
-      'screen-paywall': 'Paywall / Discovery',
-      'screen-device-select': 'Device Selection (In-App)',
-      'screen-web-checkout': 'Web Checkout (Stripe)',
-      'screen-web-cancel': 'Web Cancel (Stripe)',
-      'screen-manage-addon': 'Manage Add-On',
-      'screen-manage-addon-backyard': 'Manage Add-On',
-      'screen-t3-compare': 'T3 Comparison',
-      'screen-onboarding': 'Post-Purchase Onboarding',
+      'screen-services': 'Services', 'screen-paywall': 'Paywall',
+      'screen-device-select': 'Device selection (in-app)', 'screen-web-checkout': 'Web checkout (Stripe)',
+      'screen-web-cancel': 'Web cancel (Stripe)', 'screen-manage-addon': 'Manage add-on',
+      'screen-manage-addon-backyard': 'Manage add-on', 'screen-t3-compare': 'T3 comparison',
+      'screen-onboarding': 'Post-purchase onboarding',
     };
     const label = document.getElementById('flow-label');
     if (labels[id]) { label.textContent = labels[id]; label.style.display = 'block'; }
     else { label.style.display = 'none'; }
-
     updateServicesScreen();
   }
 
-  // ── Device selection ──
   function toggleDevice(el, deviceId) {
     if (state.purchasedDevices.has(deviceId)) return;
     el.classList.toggle('selected');
@@ -1041,15 +1009,13 @@
     const btn = document.getElementById('btn-continue-purchase');
     if (count > 0) {
       summary.style.display = 'block';
-      const price = state.pricingMode === 'monthly'
-        ? (count * state.monthlyPrice).toFixed(2) : (count * state.yearlyPrice).toFixed(2);
+      const price = state.pricingMode === 'monthly' ? (count * state.monthlyPrice).toFixed(2) : (count * state.yearlyPrice).toFixed(2);
       const period = state.pricingMode === 'monthly' ? '/month' : '/year';
       document.getElementById('summary-device-count').textContent = count + (count === 1 ? ' camera' : ' cameras');
       document.getElementById('summary-price').textContent = '$' + price + period;
       btn.style.opacity = '1'; btn.style.pointerEvents = 'auto';
     } else {
-      summary.style.display = 'none';
-      btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
+      summary.style.display = 'none'; btn.style.opacity = '.4'; btn.style.pointerEvents = 'none';
     }
   }
 
@@ -1060,14 +1026,12 @@
     updateSummary();
   }
 
-  // ── System disclosure modal (Apple-mandated) ──
   function showSystemModal(intent) {
     state.modalIntent = intent || 'checkout';
     const overlay = document.getElementById('system-modal-overlay');
     const title = document.getElementById('modal-title');
     const body = document.getElementById('modal-body');
     const domain = document.getElementById('modal-domain');
-
     if (state.modalIntent === 'manage') {
       title.textContent = 'You are about to leave the Wyze app';
       body.textContent = 'You\'ll be directed to wyze.com to manage your Pro AI subscription and billing details.';
@@ -1088,30 +1052,21 @@
     overlay.classList.add('show');
   }
 
-  function closeSystemModal() {
-    document.getElementById('system-modal-overlay').classList.remove('show');
-  }
+  function closeSystemModal() { document.getElementById('system-modal-overlay').classList.remove('show'); }
 
   function proceedToWeb() {
     closeSystemModal();
-    if (state.modalIntent === 'manage') {
-      showToast('Opening wyze.com/account...');
-      return;
-    }
+    if (state.modalIntent === 'manage') { showToast('Opening wyze.com/account...'); return; }
     if (state.modalIntent.startsWith('cancel-')) {
-      // Open web cancel page
       const camName = deviceNames[state.cancelTarget] || 'Camera';
       document.getElementById('cancel-device-name').textContent = 'Pro AI · ' + camName;
       document.getElementById('cancel-url').textContent = 'wyze.com/account/cancel/pro-ai';
-      showScreen('screen-web-cancel');
-      return;
+      showScreen('screen-web-cancel'); return;
     }
-    // Build Stripe checkout screen with selected devices
     buildStripeCheckout();
     showScreen('screen-web-checkout');
   }
 
-  // ── Build Stripe checkout page from selections ──
   function buildStripeCheckout() {
     const container = document.getElementById('stripe-line-items');
     const price = state.pricingMode === 'monthly' ? state.monthlyPrice : state.yearlyPrice;
@@ -1119,69 +1074,42 @@
     const billingLabel = state.pricingMode === 'monthly' ? 'Billed monthly' : 'Billed annually';
     let html = '';
     state.selectedDevices.forEach(d => {
-      html += `<div class="stripe-line-item">
-        <span class="item-name">Pro AI · ${deviceNames[d]}</span>
-        <span class="item-price">$${price.toFixed(2)}${period}</span>
-      </div>`;
+      html += `<div class="stripe-line-item"><span>Pro AI · ${deviceNames[d]}</span><span class="item-price">$${price.toFixed(2)}${period}</span></div>`;
     });
     container.innerHTML = html;
     const total = state.selectedDevices.size * price;
     document.getElementById('stripe-total').textContent = '$' + total.toFixed(2) + period;
-    document.getElementById('stripe-billing-note').textContent =
-      billingLabel + '. Prorated for first cycle. Cancel anytime.';
+    document.getElementById('stripe-billing-note').textContent = billingLabel + '. Prorated for first cycle. Cancel anytime.';
   }
 
-  // ── Complete Stripe checkout → return to app ──
   function completeStripeCheckout() {
     state.selectedDevices.forEach(d => state.purchasedDevices.add(d));
-
     const names = [...state.selectedDevices].map(d => deviceNames[d]);
     document.getElementById('onboarding-devices-text').textContent =
       'Pro AI is now active on ' + names.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.';
-
     const deviceCount = state.purchasedDevices.size;
     state.selectedDevices.clear();
     document.querySelectorAll('.device-card').forEach(dc => dc.classList.remove('selected'));
-
-    // Simulate return to app
     showScreen('screen-onboarding');
     showToast('Purchase received — activating Pro AI');
-
-    if (deviceCount >= 3) {
-      setTimeout(() => openSheet('sheet-t3-nudge'), 1500);
-    }
+    if (deviceCount >= 3) { setTimeout(() => openSheet('sheet-t3-nudge'), 1500); }
   }
 
-  // ── Complete cancel on web ──
   function completeCancelOnWeb() {
     const camName = deviceNames[state.cancelTarget] || 'this camera';
-    // In real app: Stripe cancels the subscription, webhook fires
     showScreen('screen-services');
     showToast('Pro AI cancelled on ' + camName + ' — active until Feb 8');
     state.cancelTarget = null;
   }
 
-  // ── "Done" in web browser → return to app ──
-  function returnToApp() {
-    showScreen('screen-services');
-    showToast('Returned to Wyze app');
-  }
+  function returnToApp() { showScreen('screen-services'); showToast('Returned to Wyze app'); }
 
-  // ── Services screen update ──
   function updateServicesScreen() {
     const area = document.getElementById('addon-nested-area');
-    const rows = {
-      frontdoor: document.getElementById('addon-row-frontdoor'),
-      backyard: document.getElementById('addon-row-backyard'),
-      garage: document.getElementById('addon-row-garage'),
-    };
+    const rows = { frontdoor: document.getElementById('addon-row-frontdoor'), backyard: document.getElementById('addon-row-backyard'), garage: document.getElementById('addon-row-garage') };
     let hasAny = false;
-    Object.keys(rows).forEach(d => {
-      if (state.purchasedDevices.has(d)) { rows[d].style.display = 'flex'; hasAny = true; }
-    });
+    Object.keys(rows).forEach(d => { if (state.purchasedDevices.has(d)) { rows[d].style.display = 'flex'; hasAny = true; } });
     area.style.display = hasAny ? 'block' : 'none';
-
-    // Mark purchased in device selector
     document.querySelectorAll('.device-card').forEach(dc => {
       const deviceId = dc.getAttribute('onclick')?.match(/'(\w+)'/)?.[1];
       if (deviceId && state.purchasedDevices.has(deviceId)) {
@@ -1196,22 +1124,13 @@
     });
   }
 
-  // ── Cancel ──
-  function cancelAddon() {
-    closeSheet();
-    showToast('Pro AI cancelled — active until Feb 8, 2027');
-    setTimeout(() => showScreen('screen-services'), 800);
-  }
-
-  // ── NBD selector ──
   function selectNBD(el) {
     el.parentElement.querySelectorAll('button').forEach(b => {
-      b.style.borderColor = 'var(--border)'; b.style.background = 'transparent'; b.style.color = 'var(--text)';
+      b.style.border = '1px solid var(--border-light)'; b.style.background = 'var(--surface1)'; b.style.color = 'var(--text-muted)';
     });
-    el.style.borderColor = 'var(--teal)'; el.style.background = 'var(--teal-bg)'; el.style.color = 'var(--teal)';
+    el.style.border = 'none'; el.style.background = 'var(--green)'; el.style.color = '#1E1E1E';
   }
 
-  // ── Toast ──
   function showToast(text) {
     const toast = document.getElementById('toast');
     document.getElementById('toast-text').textContent = text;
@@ -1219,15 +1138,8 @@
     setTimeout(() => toast.classList.remove('show'), 3000);
   }
 
-  // ── Sheets ──
-  function openSheet(id) {
-    document.getElementById('sheet-overlay').classList.add('show');
-    document.getElementById(id).classList.add('show');
-  }
-  function closeSheet() {
-    document.getElementById('sheet-overlay').classList.remove('show');
-    document.querySelectorAll('.sheet').forEach(s => s.classList.remove('show'));
-  }
+  function openSheet(id) { document.getElementById('sheet-overlay').classList.add('show'); document.getElementById(id).classList.add('show'); }
+  function closeSheet() { document.getElementById('sheet-overlay').classList.remove('show'); document.querySelectorAll('.sheet').forEach(s => s.classList.remove('show')); }
 </script>
 </body>
 </html>
