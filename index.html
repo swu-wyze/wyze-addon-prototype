@@ -53,9 +53,12 @@
     margin: 0 auto; position: relative; overflow: hidden; background: var(--bg);
     display: flex; flex-direction: column;
   }
+  @media (max-width: 499px) {
+    .phone { padding-bottom: 52px; }
+  }
   @media (min-width: 500px) {
     body { display: flex; align-items: center; justify-content: center; background: #111; }
-    .phone { border-radius: 40px; border: 8px solid #000; height: 852px; margin-top: 20px; margin-bottom: 20px; }
+    .phone { border-radius: 40px; border: 8px solid #000; height: 852px; margin-top: 60px; margin-bottom: 20px; }
   }
 
   /* ── Status Bar ── */
@@ -477,6 +480,47 @@
     letter-spacing: .5px; text-transform: uppercase; pointer-events: none;
     backdrop-filter: blur(8px); border: 1px solid var(--border-light);
   }
+
+  /* ── Persona Switcher ── */
+  .persona-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 600;
+    background: #111; border-top: 1px solid var(--border-light);
+    padding: 10px 12px calc(env(safe-area-inset-bottom, 0px) + 10px);
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+  }
+  @media (min-width: 500px) {
+    .persona-bar {
+      bottom: auto; top: 12px; left: 50%; right: auto; transform: translateX(-50%);
+      border-radius: var(--radius-pill); border: 1px solid var(--border-light);
+      padding: 6px 8px; max-width: 520px; flex-wrap: nowrap;
+      background: rgba(17,17,17,.92); backdrop-filter: blur(12px);
+    }
+  }
+  .persona-btn {
+    padding: 7px 14px; border-radius: var(--radius-pill); border: 1px solid var(--border);
+    background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: var(--font); transition: all .15s; white-space: nowrap;
+  }
+  .persona-btn:hover { border-color: var(--border-hover); color: var(--text-secondary); }
+  .persona-btn.active { background: var(--green); color: #1E1E1E; border-color: var(--green); }
+  .persona-btn .tier-label { font-size: 10px; opacity: .7; margin-right: 2px; }
+
+  /* ── Free user upsell ── */
+  .upsell-card {
+    background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 12px;
+    padding: 24px 20px; text-align: center; border: 1px solid var(--border);
+    box-shadow: var(--shadow-card);
+  }
+  .upsell-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .upsell-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
+
+  /* ── T3 included badge ── */
+  .included-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 11px; font-weight: 600; color: var(--green);
+    background: var(--green-bg); border: 1px solid rgba(29,240,187,.2);
+    padding: 3px 10px; border-radius: var(--radius-pill);
+  }
 </style>
 </head>
 <body>
@@ -494,15 +538,21 @@
   <!-- ════════ SCREEN: Account ════════ -->
   <div class="screen active" id="screen-account">
     <div class="screen-header"><h1>Account</h1></div>
-    <div class="plan-badge">
+    <div class="plan-badge" id="plan-badge">
       <div class="info">
-        <h2>Cam Plus</h2>
-        <p>Active until Jan 29, 2027</p>
-        <p style="font-weight:600; font-size:12px; margin-top:2px; color:var(--text-muted);">Member since 2026</p>
+        <h2 id="plan-name">Cam Plus</h2>
+        <p id="plan-detail-line">Active until Jan 29, 2027</p>
+        <p style="font-weight:600; font-size:12px; margin-top:2px; color:var(--text-muted);" id="plan-member-since">Member since 2026</p>
       </div>
       <svg class="shield" viewBox="0 0 56 56" fill="none">
-        <path d="M28 4L8 14v14c0 12.4 8.5 24 20 28 11.5-4 20-15.6 20-28V14L28 4z" stroke="#4E2FD2" stroke-width="3" fill="none"/>
+        <path id="shield-path" d="M28 4L8 14v14c0 12.4 8.5 24 20 28 11.5-4 20-15.6 20-28V14L28 4z" stroke="#4E2FD2" stroke-width="3" fill="none"/>
       </svg>
+    </div>
+    <div class="upsell-card" id="no-plan-card" style="display:none;">
+      <div style="font-size:36px; margin-bottom:8px;">🎥</div>
+      <h3>Unlock more from your cameras</h3>
+      <p>Subscribe to a Wyze Cam plan for cloud video, smart alerts, and add-ons like Pro AI.</p>
+      <button class="btn-primary" style="width:100%; margin:0;" onclick="showToast('Plan selection would open here')">Explore plans</button>
     </div>
     <div class="card-group">
       <div class="card-row">
@@ -546,14 +596,25 @@
       <button class="back-btn" onclick="showScreen('screen-account')">‹</button>
       <h1>Services</h1>
     </div>
-    <div class="section-title">Your plan</div>
+    <!-- Free user message -->
+    <div id="free-services-msg" style="display:none;">
+      <div class="section-title">Your plan</div>
+      <div class="upsell-card">
+        <div style="font-size:28px; margin-bottom:8px;">📋</div>
+        <h3>No active plan</h3>
+        <p>Subscribe to a Cam plan to unlock cloud video, smart detection, and add-ons.</p>
+        <button class="btn-primary" style="width:100%; margin:0;" onclick="showToast('Plan selection would open here')">View plans</button>
+      </div>
+    </div>
+
+    <div class="section-title" id="your-plan-title">Your plan</div>
     <div class="service-item" id="parent-sub-card">
       <div class="top">
         <div>
-          <h3>Cam Plus <span>· Annual x 1</span></h3>
+          <h3><span id="parent-plan-name">Cam Plus</span> <span id="parent-plan-detail">· Annual x 1</span></h3>
           <div class="meta">
             <span style="color:var(--green);">●</span>
-            <span>Renews Jan 29, 2027</span>
+            <span id="parent-renew-date">Renews Jan 29, 2027</span>
           </div>
         </div>
         <span class="dots" onclick="event.stopPropagation(); openSheet('sheet-parent-options')">···</span>
@@ -584,31 +645,68 @@
           <span class="chevron" style="color:var(--text-muted);">›</span>
         </div>
       </div>
+      <!-- T3 included features (shown when persona = t3) -->
+      <div class="addon-nested" id="t3-plan-features" style="display:none;">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span class="included-badge">✦ Pro AI included</span>
+        </div>
+        <div style="font-size:12px; color:var(--text-muted); line-height:1.5;">
+          Descriptive alerts, NBD filter, and video search are active on all your cameras.
+        </div>
+      </div>
     </div>
 
-    <div class="section-title">Available add-ons</div>
-    <div class="addon-cta" onclick="showScreen('screen-paywall')">
-      <div class="cta-icon">✦</div>
-      <div class="cta-body">
-        <div class="cta-title">Pro AI <span class="ai-badge">✦ NEW</span></div>
-        <div class="cta-desc">Smarter alerts, noise filter, video search</div>
+    <!-- Add-on CTA section (T1/T2 only) -->
+    <div id="addon-cta-section">
+      <div class="section-title">Available add-ons</div>
+      <div class="addon-cta" onclick="showScreen('screen-paywall')">
+        <div class="cta-icon">✦</div>
+        <div class="cta-body">
+          <div class="cta-title">Pro AI <span class="ai-badge">✦ NEW</span></div>
+          <div class="cta-desc">Smarter alerts, noise filter, video search</div>
+        </div>
+        <div class="cta-price">
+          <div class="amount">$5.99</div>
+          <div class="per">/cam/mo</div>
+        </div>
+        <span class="cta-chevron">›</span>
       </div>
-      <div class="cta-price">
-        <div class="amount">$5.99</div>
-        <div class="per">/cam/mo</div>
+      <div class="addon-cta" style="opacity:.35; pointer-events:none;">
+        <div class="cta-icon" style="background:var(--surface3); color:var(--text-muted);">60d</div>
+        <div class="cta-body">
+          <div class="cta-title" style="color:var(--text-muted);">60-day cloud storage</div>
+          <div class="cta-desc">Extended video history per camera</div>
+        </div>
+        <div class="cta-price"><div class="amount" style="font-size:12px; color:var(--text-muted); font-weight:400;">Coming soon</div></div>
       </div>
-      <span class="cta-chevron">›</span>
     </div>
-    <div class="addon-cta" style="opacity:.35; pointer-events:none;">
-      <div class="cta-icon" style="background:var(--surface3); color:var(--text-muted);">60d</div>
-      <div class="cta-body">
-        <div class="cta-title" style="color:var(--text-muted);">60-day cloud storage</div>
-        <div class="cta-desc">Extended video history per camera</div>
+
+    <!-- T3 included section -->
+    <div id="t3-included-section" style="display:none;">
+      <div class="section-title">Your add-ons</div>
+      <div class="addon-cta" style="cursor:default;">
+        <div class="cta-icon">✦</div>
+        <div class="cta-body">
+          <div class="cta-title">Pro AI <span class="included-badge">✦ Included</span></div>
+          <div class="cta-desc">Active on all cameras · Unlimited</div>
+        </div>
+        <div class="cta-price">
+          <div class="amount" style="font-size:13px; color:var(--green); font-weight:600;">$0.00</div>
+          <div class="per">included</div>
+        </div>
       </div>
-      <div class="cta-price"><div class="amount" style="font-size:12px; color:var(--text-muted); font-weight:400;">Coming soon</div></div>
+      <div class="addon-cta" style="opacity:.35; pointer-events:none;">
+        <div class="cta-icon" style="background:var(--surface3); color:var(--text-muted);">60d</div>
+        <div class="cta-body">
+          <div class="cta-title" style="color:var(--text-muted);">60-day cloud storage</div>
+          <div class="cta-desc">Extended video history per camera</div>
+        </div>
+        <div class="cta-price"><div class="amount" style="font-size:13px; color:var(--green); font-weight:600;">$0.00</div><div class="per">included</div></div>
+      </div>
     </div>
-    <div style="text-align:center; padding: 20px 16px 8px;">
-      <p style="font-size:14px; color:var(--text-muted);">Upgrade to <span style="color:var(--purple-light); font-weight:600;">Cam Unlimited</span></p>
+
+    <div id="upgrade-hint" style="text-align:center; padding: 20px 16px 8px;">
+      <p style="font-size:14px; color:var(--text-muted);">Upgrade to <span style="color:var(--purple-light); font-weight:600;" id="upgrade-plan-target">Cam Unlimited</span></p>
       <p style="font-size:12px; color:var(--text-muted);">All-in-one coverage for every camera</p>
     </div>
   </div>
@@ -744,7 +842,7 @@
       <div class="info-row"><span class="info-label">Camera</span><span class="info-value">Front Door</span></div>
       <div class="info-row"><span class="info-label">Plan</span><span class="info-value">$5.99/month</span></div>
       <div class="info-row"><span class="info-label">Next renewal</span><span class="info-value">Feb 8, 2027</span></div>
-      <div class="info-row"><span class="info-label">Parent plan</span><span class="info-value">Cam Plus · Annual</span></div>
+      <div class="info-row"><span class="info-label">Parent plan</span><span class="info-value manage-parent-plan">Cam Plus · Annual</span></div>
     </div>
     <div class="section-title">Features included</div>
     <div class="card">
@@ -773,7 +871,7 @@
       <div class="info-row"><span class="info-label">Camera</span><span class="info-value">Backyard</span></div>
       <div class="info-row"><span class="info-label">Plan</span><span class="info-value">$5.99/month</span></div>
       <div class="info-row"><span class="info-label">Next renewal</span><span class="info-value">Feb 8, 2027</span></div>
-      <div class="info-row"><span class="info-label">Parent plan</span><span class="info-value">Cam Plus · Annual</span></div>
+      <div class="info-row"><span class="info-label">Parent plan</span><span class="info-value manage-parent-plan">Cam Plus · Annual</span></div>
     </div>
     <button class="btn-ghost" onclick="showSystemModal('manage')">Manage on wyze.com</button>
     <button class="btn-danger-text" onclick="showSystemModal('cancel-backyard')">Cancel Pro AI on this camera</button>
@@ -933,7 +1031,7 @@
 
 <div class="sheet" id="sheet-parent-options">
   <div class="sheet-handle"></div>
-  <div class="sheet-title">Cam Plus · Annual</div>
+  <div class="sheet-title" id="sheet-parent-title">Cam Plus · Annual</div>
   <div class="sheet-body">
     <div class="card-row" style="padding:14px 0; border-bottom:1px solid var(--border-light); cursor:pointer;">
       <span class="label" style="font-size:15px;">View plan details</span><span class="chevron">›</span>
@@ -961,8 +1059,17 @@
 <div class="toast" id="toast"><span class="toast-icon">✓</span> <span id="toast-text"></span></div>
 <div class="flow-label" id="flow-label" style="display:none;"></div>
 
+<!-- ════════ PERSONA SWITCHER ════════ -->
+<div class="persona-bar" id="persona-bar">
+  <button class="persona-btn" onclick="setPersona('free')"><span class="tier-label">—</span> Free user</button>
+  <button class="persona-btn active" onclick="setPersona('t1')"><span class="tier-label">T1</span> Cam Plus</button>
+  <button class="persona-btn" onclick="setPersona('t2')"><span class="tier-label">T2</span> Cam Unlimited</button>
+  <button class="persona-btn" onclick="setPersona('t3')"><span class="tier-label">T3</span> Cam Unlimited Pro</button>
+</div>
+
 <script>
   const state = {
+    persona: 't1',
     selectedDevices: new Set(),
     purchasedDevices: new Set(),
     pricingMode: 'monthly',
@@ -972,6 +1079,153 @@
     cancelTarget: null,
   };
   const deviceNames = { frontdoor: 'Front Door', backyard: 'Backyard', garage: 'Garage', driveway: 'Driveway' };
+
+  const personaConfig = {
+    free: {
+      planName: null,
+      planDetail: null,
+      renewDate: null,
+      shieldColor: 'var(--text-muted)',
+      memberSince: null,
+      hasPlan: false,
+      canAddAddon: false,
+      addonIncluded: false,
+      cameraSubs: [],
+    },
+    t1: {
+      planName: 'Cam Plus',
+      planDetail: '· Annual x 1',
+      renewDate: 'Jan 29, 2027',
+      shieldColor: '#4E2FD2',
+      memberSince: '2026',
+      hasPlan: true,
+      canAddAddon: true,
+      addonIncluded: false,
+      cameraSubs: ['Cam Plus'],
+    },
+    t2: {
+      planName: 'Cam Unlimited',
+      planDetail: '· Annual',
+      renewDate: 'Jan 29, 2027',
+      shieldColor: '#4E2FD2',
+      memberSince: '2025',
+      hasPlan: true,
+      canAddAddon: true,
+      addonIncluded: false,
+      cameraSubs: ['Cam Unlimited'],
+    },
+    t3: {
+      planName: 'Cam Unlimited Pro',
+      planDetail: '· Annual',
+      renewDate: 'Jan 29, 2027',
+      shieldColor: '#1DF0BB',
+      memberSince: '2025',
+      hasPlan: true,
+      canAddAddon: false,
+      addonIncluded: true,
+      cameraSubs: ['Cam Unlimited Pro'],
+    },
+  };
+
+  function setPersona(tier) {
+    state.persona = tier;
+    state.selectedDevices.clear();
+    state.purchasedDevices.clear();
+    state.pricingMode = 'monthly';
+    // Update persona buttons
+    document.querySelectorAll('.persona-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.persona-btn[onclick*="${tier}"]`).classList.add('active');
+    // Reset device cards
+    document.querySelectorAll('.device-card').forEach(dc => {
+      dc.classList.remove('selected'); dc.style.opacity = ''; dc.style.pointerEvents = '';
+      const already = dc.querySelector('.already');
+      if (already) {
+        const circle = document.createElement('div');
+        circle.className = 'check-circle';
+        already.replaceWith(circle);
+      }
+    });
+    applyPersona();
+    showScreen('screen-account');
+  }
+
+  function applyPersona() {
+    const cfg = personaConfig[state.persona];
+    // ── Account screen ──
+    const planBadge = document.getElementById('plan-badge');
+    const noPlanCard = document.getElementById('no-plan-card');
+    if (cfg.hasPlan) {
+      planBadge.style.display = 'flex';
+      noPlanCard.style.display = 'none';
+      document.getElementById('plan-name').textContent = cfg.planName;
+      document.getElementById('plan-detail-line').textContent = `Active until ${cfg.renewDate}`;
+      document.getElementById('plan-member-since').textContent = `Member since ${cfg.memberSince}`;
+      document.getElementById('shield-path').setAttribute('stroke', cfg.shieldColor);
+    } else {
+      planBadge.style.display = 'none';
+      noPlanCard.style.display = 'block';
+    }
+    // ── Services screen ──
+    const parentSubCard = document.getElementById('parent-sub-card');
+    const freeServicesMsg = document.getElementById('free-services-msg');
+    const addonCtaSection = document.getElementById('addon-cta-section');
+    const t3IncludedSection = document.getElementById('t3-included-section');
+    const upgradeHint = document.getElementById('upgrade-hint');
+    const parentPlanName = document.getElementById('parent-plan-name');
+    const parentPlanDetail = document.getElementById('parent-plan-detail');
+    const parentRenewDate = document.getElementById('parent-renew-date');
+    const sheetTitle = document.getElementById('sheet-parent-title');
+
+    const yourPlanTitle = document.getElementById('your-plan-title');
+    if (cfg.hasPlan) {
+      parentSubCard.style.display = 'block';
+      yourPlanTitle.style.display = 'block';
+      freeServicesMsg.style.display = 'none';
+      parentPlanName.textContent = cfg.planName;
+      parentPlanDetail.textContent = cfg.planDetail;
+      parentRenewDate.textContent = `Renews ${cfg.renewDate}`;
+      sheetTitle.textContent = `${cfg.planName} ${cfg.planDetail}`;
+    } else {
+      parentSubCard.style.display = 'none';
+      yourPlanTitle.style.display = 'none';
+      freeServicesMsg.style.display = 'block';
+    }
+
+    // T3 plan features nested
+    const t3PlanFeatures = document.getElementById('t3-plan-features');
+    t3PlanFeatures.style.display = cfg.addonIncluded ? 'block' : 'none';
+
+    // Add-on CTA vs T3 included
+    if (cfg.addonIncluded) {
+      addonCtaSection.style.display = 'none';
+      t3IncludedSection.style.display = 'block';
+      upgradeHint.style.display = 'none';
+    } else if (cfg.canAddAddon) {
+      addonCtaSection.style.display = 'block';
+      t3IncludedSection.style.display = 'none';
+      upgradeHint.style.display = 'block';
+      document.getElementById('upgrade-plan-target').textContent = cfg.planName === 'Cam Plus' ? 'Cam Unlimited' : 'Cam Unlimited Pro';
+    } else {
+      // free user
+      addonCtaSection.style.display = 'none';
+      t3IncludedSection.style.display = 'none';
+      upgradeHint.style.display = 'none';
+    }
+
+    // Update device card sub-labels
+    const subLabel = cfg.hasPlan ? cfg.cameraSubs[0] : 'No plan';
+    document.querySelectorAll('.device-card .sub').forEach(el => {
+      const model = el.textContent.split('·')[0].trim();
+      el.textContent = model + ' · ' + subLabel;
+    });
+
+    // Update manage add-on parent plan labels
+    document.querySelectorAll('.manage-parent-plan').forEach(el => {
+      el.textContent = cfg.hasPlan ? cfg.planName + ' ' + cfg.planDetail : '—';
+    });
+
+    updateServicesScreen();
+  }
 
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
