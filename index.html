@@ -514,6 +514,39 @@
   .upsell-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
   .upsell-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px; }
 
+  /* ── Plan catalog cards ── */
+  .plan-card {
+    background: var(--surface1); border-radius: var(--radius-card); margin: 0 16px 10px;
+    padding: 16px 18px; border: 1px solid var(--border); box-shadow: var(--shadow-card);
+    cursor: pointer; transition: border-color .15s;
+  }
+  .plan-card:active { background: var(--surface2); }
+  .plan-card .plan-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 6px; }
+  .plan-card .plan-card-name { font-size: 16px; font-weight: 600; }
+  .plan-card .plan-card-price { text-align: right; flex-shrink: 0; }
+  .plan-card .plan-card-price .price-amount { font-size: 16px; font-weight: 700; color: var(--green); }
+  .plan-card .plan-card-price .price-per { font-size: 11px; color: var(--text-muted); }
+  .plan-card .plan-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 10px; }
+  .plan-card .plan-card-features { display: flex; flex-wrap: wrap; gap: 6px; }
+  .plan-card .plan-card-features .tag {
+    font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: var(--radius-pill);
+    background: var(--surface3); color: var(--text-secondary);
+  }
+  .plan-card .plan-card-features .tag.purple { background: var(--purple-bg); color: var(--purple-light); border: 1px solid var(--purple-border); }
+  .plan-card .plan-card-features .tag.green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(29,240,187,.2); }
+  .plan-card.featured { border-color: var(--purple-border); }
+  .plan-card.featured .popular-badge {
+    font-size: 10px; font-weight: 600; color: var(--purple-light);
+    background: var(--purple-bg); border: 1px solid var(--purple-border);
+    padding: 2px 10px; border-radius: var(--radius-pill); display: inline-block; margin-bottom: 8px;
+  }
+  .plan-card .plan-card-cta {
+    margin-top: 12px; padding: 10px; border-radius: var(--radius-sm); border: none;
+    background: var(--green); color: #1E1E1E; font-size: 14px; font-weight: 600;
+    width: 100%; cursor: pointer; font-family: var(--font); text-align: center;
+  }
+  .plan-card .plan-card-cta.gradient { background: var(--gradient); color: #fff; }
+
   /* ── T3 included badge ── */
   .included-badge {
     display: inline-flex; align-items: center; gap: 4px;
@@ -596,14 +629,92 @@
       <button class="back-btn" onclick="showScreen('screen-account')">‹</button>
       <h1>Services</h1>
     </div>
-    <!-- Free user message -->
+    <!-- Free user storefront -->
     <div id="free-services-msg" style="display:none;">
-      <div class="section-title">Your plan</div>
-      <div class="upsell-card">
-        <div style="font-size:28px; margin-bottom:8px;">📋</div>
-        <h3>No active plan</h3>
-        <p>Subscribe to a Cam plan to unlock cloud video, smart detection, and add-ons.</p>
-        <button class="btn-primary" style="width:100%; margin:0;" onclick="showToast('Plan selection would open here')">View plans</button>
+      <div style="padding: 8px 20px 4px;">
+        <p style="font-size: 14px; color: var(--text-muted); line-height: 1.5;">Subscribe to unlock cloud video, smart alerts, and AI-powered add-ons for your cameras.</p>
+      </div>
+
+      <div class="section-title">Plans</div>
+
+      <div class="plan-card" onclick="showToast('Cam Plus checkout would open here')">
+        <div class="plan-card-top">
+          <div class="plan-card-name">Cam Plus</div>
+          <div class="plan-card-price">
+            <span class="price-amount">$2.99</span>
+            <span class="price-per">/cam/mo</span>
+          </div>
+        </div>
+        <div class="plan-card-desc">Per-camera cloud plan with smart detection and 14-day video history.</div>
+        <div class="plan-card-features">
+          <span class="tag">14-day video</span>
+          <span class="tag">Person detection</span>
+          <span class="tag">Pet detection</span>
+          <span class="tag">Package detection</span>
+        </div>
+        <button class="plan-card-cta" onclick="event.stopPropagation(); showToast('Cam Plus checkout would open here')">Get Cam Plus</button>
+      </div>
+
+      <div class="plan-card featured" onclick="showToast('Cam Unlimited checkout would open here')">
+        <span class="popular-badge">Most popular</span>
+        <div class="plan-card-top">
+          <div class="plan-card-name">Cam Unlimited</div>
+          <div class="plan-card-price">
+            <span class="price-amount">$7.99</span>
+            <span class="price-per">/mo</span>
+          </div>
+        </div>
+        <div class="plan-card-desc">Covers all your cameras with one subscription. 14-day video, smart detection, and friendly faces.</div>
+        <div class="plan-card-features">
+          <span class="tag green">Unlimited cameras</span>
+          <span class="tag">14-day video</span>
+          <span class="tag">Friendly faces</span>
+        </div>
+        <button class="plan-card-cta" onclick="event.stopPropagation(); showToast('Cam Unlimited checkout would open here')">Get Cam Unlimited</button>
+      </div>
+
+      <div class="plan-card" onclick="showToast('Cam Unlimited Pro checkout would open here')">
+        <div class="plan-card-top">
+          <div class="plan-card-name">Cam Unlimited Pro</div>
+          <div class="plan-card-price">
+            <span class="price-amount">$19.99</span>
+            <span class="price-per">/mo</span>
+          </div>
+        </div>
+        <div class="plan-card-desc">The ultimate package — everything in Cam Unlimited, plus Pro AI on every camera and 60-day video history.</div>
+        <div class="plan-card-features">
+          <span class="tag green">Unlimited cameras</span>
+          <span class="tag purple">✦ Pro AI included</span>
+          <span class="tag">60-day video</span>
+          <span class="tag">Emergency dispatch</span>
+        </div>
+        <button class="plan-card-cta gradient" onclick="event.stopPropagation(); showToast('Cam Unlimited Pro checkout would open here')">Get Cam Unlimited Pro</button>
+      </div>
+
+      <div class="section-title">Add-ons</div>
+      <div style="padding: 0 16px 4px;">
+        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px;">Add-ons require an active Cam plan. Subscribe to a plan above first.</p>
+      </div>
+
+      <div class="addon-cta" style="opacity:.5; pointer-events:none;">
+        <div class="cta-icon">✦</div>
+        <div class="cta-body">
+          <div class="cta-title">Pro AI <span class="ai-badge">✦ NEW</span></div>
+          <div class="cta-desc">Smarter alerts, noise filter, video search</div>
+        </div>
+        <div class="cta-price">
+          <div class="amount">$5.99</div>
+          <div class="per">/cam/mo</div>
+        </div>
+        <span class="cta-chevron">›</span>
+      </div>
+      <div class="addon-cta" style="opacity:.35; pointer-events:none;">
+        <div class="cta-icon" style="background:var(--surface3); color:var(--text-muted);">60d</div>
+        <div class="cta-body">
+          <div class="cta-title" style="color:var(--text-muted);">60-day cloud storage</div>
+          <div class="cta-desc">Extended video history per camera</div>
+        </div>
+        <div class="cta-price"><div class="amount" style="font-size:12px; color:var(--text-muted); font-weight:400;">Coming soon</div></div>
       </div>
     </div>
 
